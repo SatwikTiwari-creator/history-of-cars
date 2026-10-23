@@ -1,0 +1,4118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Road of Time — The History of Cars</title>
+  <meta name="description" content="An interactive deep-scrolling journey through the 150-year history of the automobile, from 1769 steam pioneers to 2030+ autonomous hypercars. Inspired by Neal Fun's The Deep Sea.">
+  <style>
+/**
+ * The History of Cars - Clean Editorial Stylesheet
+ * Hand-crafted, readable, authentic aesthetic inspired by museum catalogs
+ * and minimalist interactive journalism. Zero neon glow or synthetic AI tropes.
+ */
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+  
+  /* Natural Editorial Palette */
+  --bg-main: #141619;
+  --bg-card: #1c1e22;
+  --bg-card-hover: #22252a;
+  --bg-subtle: #25282f;
+  --border-color: #2c3038;
+  --border-light: #3a3f4a;
+  
+  /* Typography */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  
+  /* Classic Accents */
+  --accent-warm: #bfa15f;
+  --accent-slate: #5a7d9a;
+  --era-accent: var(--accent-warm);
+  
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--bg-main);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  line-height: 1.5;
+  transition: background-color 0.5s ease;
+}
+
+/* ==========================================================================
+   NAVIGATION / HUD (Clean, Human, Unobtrusive)
+   ========================================================================== */
+.hud-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  pointer-events: none;
+  padding: 0.75rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(180deg, rgba(20, 22, 25, 0.95) 0%, rgba(20, 22, 25, 0.8) 80%, transparent 100%);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+.hud-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  pointer-events: auto;
+}
+
+/* Year & Record Speed Counters */
+.hud-panel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 0.4rem 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.odometer-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.odometer-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+}
+
+.odometer-value {
+  font-family: var(--font-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: -0.02em;
+}
+
+.era-badge {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-size: 0.82rem;
+  font-weight: 500;
+}
+
+.era-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--era-accent);
+}
+
+/* Tasteful, tactile buttons */
+.hud-btn {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.45rem 0.85rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-sans);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  transition: all 0.15s ease;
+}
+
+.hud-btn:hover {
+  background: var(--bg-subtle);
+  border-color: var(--border-light);
+  color: #ffffff;
+}
+
+.hud-btn.active {
+  background: #2b303c;
+  color: #ffffff;
+  border-color: var(--border-light);
+}
+
+.hud-btn svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.8;
+}
+
+/* Minimal Top Progress Bar */
+.timeline-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: var(--accent-warm);
+  z-index: 101;
+  transition: width 0.1s linear;
+}
+
+/* ==========================================================================
+   MINIMAP / ERA INDEX (Clean Right Sidebar)
+   ========================================================================== */
+.minimap-container {
+  position: fixed;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 90;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.minimap-track {
+  width: 2px;
+  height: 320px;
+  background: var(--border-color);
+  position: relative;
+  border-radius: 2px;
+}
+
+.minimap-thumb {
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--bg-main);
+  transition: top 0.1s linear;
+}
+
+.minimap-labels {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 320px;
+  list-style: none;
+}
+
+.minimap-item {
+  cursor: pointer;
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  transition: color 0.15s ease;
+  white-space: nowrap;
+}
+
+.minimap-item:hover {
+  color: var(--text-primary);
+}
+
+.minimap-item.active {
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   HERO / TITLE SECTION
+   ========================================================================== */
+.hero-section {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 6rem 2rem 3rem;
+  position: relative;
+  z-index: 10;
+}
+
+.hero-subtitle {
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 5vw, 4.2rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  margin-bottom: 1.25rem;
+  color: #ffffff;
+}
+
+.hero-description {
+  max-width: 640px;
+  font-size: 1.05rem;
+  line-height: 1.6;
+  color: var(--text-secondary);
+  margin-bottom: 2rem;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+.scroll-indicator {
+  margin-top: 3rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
+/* Filter Bar */
+.filter-bar {
+  position: sticky;
+  top: 4.5rem;
+  z-index: 80;
+  display: flex;
+  justify-content: center;
+  padding: 0.5rem 1rem;
+  pointer-events: none;
+}
+
+.filter-pill-container {
+  display: flex;
+  gap: 0.35rem;
+  padding: 0.3rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  pointer-events: auto;
+  overflow-x: auto;
+  max-width: 95vw;
+}
+
+.filter-tab {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  padding: 0.35rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-sans);
+  font-size: 0.8rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  white-space: nowrap;
+}
+
+.filter-tab:hover {
+  color: #ffffff;
+}
+
+.filter-tab.active {
+  background: var(--bg-subtle);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   TIMELINE ROAD & AXIS
+   ========================================================================== */
+.timeline-highway {
+  position: relative;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 3rem 1.5rem 15rem;
+}
+
+/* Center timeline spine */
+.highway-surface {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  background: var(--border-color);
+  z-index: 1;
+}
+
+.highway-center-stripe {
+  display: none;
+}
+
+/* Era Header Milestone Banners */
+.era-banner {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  margin: 6rem auto 5rem;
+  max-width: 680px;
+  padding: 2rem 1.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+}
+
+.era-banner-years {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 0.4rem;
+}
+
+.era-banner-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+.era-banner-desc {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  line-height: 1.55;
+}
+
+/* ==========================================================================
+   CAR ENTRY CARDS (Clean Museum / Catalog Aesthetic)
+   ========================================================================== */
+.car-station {
+  position: relative;
+  z-index: 5;
+  display: flex;
+  margin-bottom: 9rem;
+  width: 100%;
+}
+
+.car-station.left {
+  justify-content: flex-start;
+}
+
+.car-station.right {
+  justify-content: flex-end;
+}
+
+/* Minimal timeline year marker */
+.station-marker {
+  position: absolute;
+  left: 50%;
+  top: 24px;
+  transform: translateX(-50%);
+  z-index: 10;
+  background: var(--bg-main);
+  border: 1px solid var(--border-light);
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.station-marker-dot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* Clean Editorial Card */
+.car-card {
+  width: min(520px, 92vw);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+}
+
+.car-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--border-light);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.car-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.5rem;
+}
+
+.car-year-badge {
+  font-family: var(--font-mono);
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  padding: 0.15rem 0.5rem;
+  border-radius: var(--radius-sm);
+}
+
+.car-category-pill {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: var(--bg-subtle);
+  color: var(--text-muted);
+}
+
+.car-title {
+  font-size: 1.4rem;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 0.15rem;
+  color: #ffffff;
+}
+
+.car-subtitle {
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  margin-bottom: 1rem;
+}
+
+/* Photo Container */
+.car-art-frame {
+  width: 100%;
+  height: 230px;
+  background: #111316;
+  border-radius: var(--radius-md);
+  margin-bottom: 1.25rem;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.car-art-frame:hover {
+  border-color: var(--border-light);
+}
+
+.car-art-frame.is-revving {
+  border-color: #ef4444;
+  transform: scale(0.985);
+}
+
+.car-art-frame.is-revving .car-photo,
+.car-art-frame.is-revving .car-vector {
+  animation: engineVibration 0.08s infinite alternate ease-in-out;
+}
+
+@keyframes engineVibration {
+  0% { transform: translateY(-1.5px) translateX(0.5px); }
+  100% { transform: translateY(1.5px) translateX(-0.5px); }
+}
+
+.car-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.3s ease;
+}
+
+.car-art-frame:hover .car-photo {
+  transform: scale(1.02);
+}
+
+.photo-overlay-tag {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  background: rgba(18, 20, 24, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  padding: 0.2rem 0.55rem;
+  border-radius: 4px;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: #e4e4e7;
+  pointer-events: none;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.car-art-frame.is-revving .photo-overlay-tag {
+  background: #7f1d1d;
+  color: #ffffff;
+  border-color: #ef4444;
+}
+
+.car-vector {
+  width: 100%;
+  height: 100%;
+}
+
+/* Clean Specifications Grid */
+.car-specs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.spec-item {
+  background: var(--bg-subtle);
+  padding: 0.5rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+}
+
+.spec-name {
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-muted);
+  margin-bottom: 0.1rem;
+}
+
+.spec-val {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.car-tagline {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  margin-bottom: 1.25rem;
+  border-left: 2px solid var(--border-light);
+  padding-left: 0.75rem;
+}
+
+.card-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.btn-details {
+  flex: 1;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.5rem 0.85rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  transition: all 0.15s ease;
+}
+
+.btn-details:hover {
+  background: #2f3440;
+  border-color: var(--border-light);
+  color: #ffffff;
+}
+
+.btn-garage-toggle {
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+}
+
+.btn-garage-toggle:hover {
+  background: #2f3440;
+  color: #ffffff;
+}
+
+.btn-garage-toggle.saved {
+  background: #3b2828;
+  border-color: #7f1d1d;
+  color: #ef4444;
+}
+
+/* Blueprint mode toggle overrides */
+body.blueprint-mode .car-photo,
+body.blueprint-mode .photo-overlay-tag {
+  display: none !important;
+}
+
+body.blueprint-mode .car-vector-fallback {
+  display: block !important;
+}
+
+/* ==========================================================================
+   SCROLL-DRIVEN ENTRY EFFECTS (Compliant & Progressive)
+   ========================================================================== */
+@supports ((animation-timeline: view()) and (animation-range: entry)) {
+  @keyframes cardFadeIn {
+    from {
+      opacity: 0.3;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .car-station {
+    view-timeline: --station-tl block;
+  }
+
+  .car-station .car-card {
+    animation: cardFadeIn linear both;
+    animation-timeline: --station-tl;
+    animation-range: entry 15% cover 35%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .car-card, .station-marker {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ==========================================================================
+   MODAL / DETAILS DIALOG
+   ========================================================================== */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 15, 0.75);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.modal-container {
+  width: min(760px, 95vw);
+  max-height: 88vh;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow-y: auto;
+  padding: 2rem;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+  position: relative;
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1.25rem;
+  right: 1.25rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.modal-close-btn:hover {
+  background: #373b47;
+  color: #ffffff;
+}
+
+/* Clean Audio Player in Modal */
+.rev-pedal-card {
+  margin: 1.25rem 0;
+  padding: 1rem 1.25rem;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.rev-pedal-btn {
+  background: #2b303c;
+  border: 1px solid var(--border-light);
+  color: #ffffff;
+  padding: 0.6rem 1.25rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.88rem;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  user-select: none;
+}
+
+.rev-pedal-btn:hover {
+  background: #363d4c;
+}
+
+.rev-pedal-btn:active {
+  transform: scale(0.97);
+}
+
+.innovations-list {
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.5rem;
+  margin: 0.75rem 0 1.25rem;
+}
+
+.innovations-list li {
+  background: var(--bg-subtle);
+  padding: 0.45rem 0.75rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  font-size: 0.82rem;
+  color: var(--text-secondary);
+}
+
+/* Search Dialog */
+.search-modal {
+  width: min(560px, 92vw);
+}
+
+.search-input-box {
+  width: 100%;
+  background: var(--bg-subtle);
+  border: 1px solid var(--border-color);
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  font-family: var(--font-sans);
+  margin-bottom: 1rem;
+  outline: none;
+}
+
+.search-input-box:focus {
+  border-color: var(--border-light);
+}
+
+.search-results-list {
+  max-height: 48vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.search-result-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.65rem 0.85rem;
+  background: var(--bg-subtle);
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.search-result-item:hover {
+  background: #2b303c;
+  border-color: var(--border-color);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .highway-surface {
+    left: 20px;
+    transform: none;
+  }
+  .car-station {
+    justify-content: flex-end !important;
+    padding-left: 45px;
+  }
+  .station-marker {
+    left: 20px;
+    transform: none;
+  }
+  .minimap-container {
+    display: none;
+  }
+  .hud-container {
+    padding: 0.5rem 1rem;
+  }
+  .odometer-value {
+    font-size: 1rem;
+  }
+  .hud-btn span {
+    display: none;
+  }
+}
+
+</style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Top Timeline Progress Bar -->
+  <div class="timeline-progress-bar" id="timeline-progress" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
+
+  <!-- FIXED HEADS UP DISPLAY (HUD) -->
+  <header class="hud-container" role="banner">
+    <!-- Left: Odometer & Speedometer -->
+    <div class="hud-group">
+      <div class="hud-panel">
+        <div class="odometer-wrapper">
+          <span class="odometer-label">TIMELINE YEAR</span>
+          <div class="odometer-value" id="odometer-year">1769</div>
+        </div>
+        <div style="width: 1px; height: 28px; background: rgba(255,255,255,0.15)"></div>
+        <div class="odometer-wrapper">
+          <span class="odometer-label">RECORD SPEED</span>
+          <div class="odometer-value" id="speedometer-val">5 km/h</div>
+        </div>
+      </div>
+
+      <div class="era-badge" id="era-badge">
+        <span class="era-dot"></span>
+        <span id="era-badge-text">The Dawn of Motoring</span>
+      </div>
+    </div>
+
+    <!-- Right: Interactive Controls -->
+    <div class="hud-group">
+      <!-- Search Button -->
+      <button class="hud-btn" id="search-btn" title="Search vehicles and innovations (Ctrl+K)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <span>Search</span>
+      </button>
+
+      <!-- View Mode (Photos / Vector) -->
+      <button class="hud-btn" id="view-mode-btn" title="Toggle between real car photos and vector blueprints">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+          <circle cx="8.5" cy="8.5" r="1.5"></circle>
+          <polyline points="21 15 16 10 5 21"></polyline>
+        </svg>
+        <span>Mode: Photos</span>
+      </button>
+
+      <!-- Cruise Control (Auto-Drive) -->
+      <button class="hud-btn" id="cruise-control-btn" title="Auto-scroll down history (Spacebar)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="5 3 19 12 5 21 5 3"></polygon>
+        </svg>
+        <span>Cruise Control</span>
+      </button>
+
+      <!-- Sound FX Toggle -->
+      <button class="hud-btn" id="sound-toggle-btn" title="Toggle synthesized engine audio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+        </svg>
+        <span>Sound: OFF</span>
+      </button>
+
+      <!-- Dream Garage Button -->
+      <button class="hud-btn" id="garage-btn" title="View saved cars">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+        </svg>
+        <span>Garage (<span id="garage-count">0</span>)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- FIXED TIMELINE SCRUBBER / MINIMAP (Neal Fun style) -->
+  <aside class="minimap-container" aria-label="Era Timeline Navigation">
+    <div class="minimap-track" id="minimap-track">
+      <div class="minimap-thumb" id="minimap-thumb"></div>
+    </div>
+    <ul class="minimap-labels" id="minimap-labels">
+      <!-- Generated via app.js -->
+    </ul>
+  </aside>
+
+  <!-- MAIN SCROLL CONTENT -->
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section">
+      <div class="hero-subtitle">The Grand Tour Through Time</div>
+      <h1 class="hero-title">The History of Cars</h1>
+      <p class="hero-description">
+        Scroll down to accelerate through 150+ years of automotive innovation. From steam-powered artillery tractors and Bertha Benz’s secret road trip, through the golden muscle era and 240-mph analog legends, down to 2,000-hp electric hypercars.
+      </p>
+
+      <div class="hero-actions">
+        <button class="hud-btn active" onclick="window.scrollBy({ top: window.innerHeight * 0.85, behavior: 'smooth' })" style="padding: 0.65rem 1.4rem; font-size: 0.92rem">
+          Explore the Timeline ↓
+        </button>
+      </div>
+
+      <div class="scroll-indicator">
+        <span>Scroll to explore</span>
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M7 13l5 5 5-5M7 6l5 5 5-5"/>
+        </svg>
+      </div>
+    </section>
+
+    <!-- STICKY FILTER BAR -->
+    <nav class="filter-bar" aria-label="Vehicle Categories">
+      <div class="filter-pill-container">
+        <button class="filter-tab active" data-filter="all">All Vehicles (47)</button>
+        <button class="filter-tab" data-filter="supercar">Supercars & Speed Kings</button>
+        <button class="filter-tab" data-filter="everyday">Everyday Revolutions</button>
+        <button class="filter-tab" data-filter="milestone">Historic Milestones</button>
+        <button class="filter-tab" data-filter="electric">Electric & Future</button>
+      </div>
+    </nav>
+
+    <!-- THE HIGHWAY -->
+    <div class="timeline-highway">
+      <!-- Asphalt surface & road markings -->
+      <div class="highway-surface" aria-hidden="true">
+        <div class="highway-center-stripe"></div>
+      </div>
+
+      <!-- Generated Car Stations and Era Banners -->
+      <div id="highway-content">
+        <!-- Rendered dynamically by app.js -->
+      </div>
+    </div>
+  </main>
+
+  <!-- VEHICLE INSPECTOR MODAL -->
+  <div class="modal-overlay" id="inspector-modal" role="dialog" aria-modal="true" aria-labelledby="inspector-title">
+    <div class="modal-container">
+      <button class="modal-close-btn" aria-label="Close modal">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div id="inspector-content">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH MODAL -->
+  <div class="modal-overlay" id="search-modal" role="dialog" aria-modal="true">
+    <div class="modal-container search-modal">
+      <button class="modal-close-btn" aria-label="Close search">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <h3 style="font-size: 1.4rem; font-weight: 800; margin-bottom: 1rem; color: #ffffff">Search The Highway</h3>
+      <input type="text" class="search-input-box" id="search-input" placeholder="Type a car name, year, engine, or innovation (e.g. F40, Veyron, 1966)..." autocomplete="off">
+      <div class="search-results-list" id="search-results">
+        <!-- Injected search results -->
+      </div>
+    </div>
+  </div>
+
+  <!-- DREAM GARAGE MODAL -->
+  <div class="modal-overlay" id="garage-modal" role="dialog" aria-modal="true">
+    <div class="modal-container">
+      <button class="modal-close-btn" aria-label="Close garage">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+      <div id="garage-content">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Main JavaScript App -->
+  <script>
+
+/* ==========================================================================
+   1. PROCEDURAL WEB AUDIO ENGINE
+   ========================================================================== */
+/**
+ * The History of Cars - Procedural Web Audio Engine
+ * Synthesizes realistic engine sounds, turbo blow-offs, electric inverters,
+ * and ambient highway audio purely using the Web Audio API without any external audio files.
+ */
+
+class CarAudioEngine {
+  constructor() {
+    this.ctx = null;
+    this.isMuted = false;
+    this.activeNodes = [];
+    this.revOscillators = [];
+    this.throttleGain = null;
+    this.isRevving = false;
+  }
+
+  init() {
+    if (!this.ctx) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (AudioCtx) {
+        this.ctx = new AudioCtx();
+      }
+    }
+    if (this.ctx && this.ctx.state === 'suspended') {
+      this.ctx.resume();
+    }
+  }
+
+  toggleMute() {
+    this.isMuted = !this.isMuted;
+    if (this.isMuted) {
+      this.stopAll();
+    }
+    return this.isMuted;
+  }
+
+  stopAll() {
+    this.activeNodes.forEach(node => {
+      try {
+        if (node.stop) node.stop();
+        if (node.disconnect) node.disconnect();
+      } catch (e) {}
+    });
+    this.activeNodes = [];
+    this.isRevving = false;
+  }
+
+  playClick() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'triangle';
+    osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(120, this.ctx.currentTime + 0.04);
+
+    gain.gain.setValueAtTime(0.15, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.04);
+  }
+
+  playSeatbeltClick() {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    // Metallic latch click
+    const now = this.ctx.currentTime;
+    const osc = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'square';
+    osc.frequency.setValueAtTime(1400, now);
+    osc.frequency.exponentialRampToValueAtTime(200, now + 0.08);
+
+    filter.type = 'bandpass';
+    filter.frequency.value = 1800;
+    filter.Q.value = 3;
+
+    gain.gain.setValueAtTime(0.2, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.08);
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    osc.stop(now + 0.08);
+  }
+
+  /**
+   * Procedural Engine Rev Synthesizer
+   */
+  startThrottleRev(profileName = 'v8-muscle') {
+    if (this.isMuted) return;
+    this.init();
+    if (!this.ctx) return;
+
+    this.stopAll();
+    this.isRevving = true;
+    const now = this.ctx.currentTime;
+
+    if (profileName === 'steam-chug') {
+      this._synthesizeSteam(now);
+    } else if (profileName === 'electric-hum' || profileName === 'electric-hyper') {
+      this._synthesizeElectric(now, profileName === 'electric-hyper');
+    } else {
+      this._synthesizeCombustion(now, profileName);
+    }
+  }
+
+  stopThrottleRev() {
+    if (!this.isRevving || !this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    // Wind down
+    if (this.throttleGain) {
+      try {
+        this.throttleGain.gain.setValueAtTime(this.throttleGain.gain.value, now);
+        this.throttleGain.gain.exponentialRampToValueAtTime(0.001, now + 0.6);
+      } catch (e) {}
+    }
+
+    setTimeout(() => {
+      this.stopAll();
+    }, 650);
+  }
+
+  _synthesizeCombustion(now, profileName) {
+    const isV12 = profileName === 'v12-howl' || profileName === 'v6-vtec';
+    const isTurbo = profileName.includes('turbo');
+    const isPuttPutt = profileName === 'putt-putt';
+
+    const baseFreq = isPuttPutt ? 45 : isV12 ? 140 : 75;
+    const targetFreq = isPuttPutt ? 95 : isV12 ? 550 : 280;
+
+    // Dual detuned oscillators for authentic exhaust rumble
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const filter = this.ctx.createBiquadFilter();
+    const masterGain = this.ctx.createGain();
+
+    osc1.type = 'sawtooth';
+    osc2.type = 'sawtooth';
+
+    osc1.frequency.setValueAtTime(baseFreq, now);
+    osc2.frequency.setValueAtTime(baseFreq * 1.015, now);
+
+    // Rev up curve
+    osc1.frequency.exponentialRampToValueAtTime(targetFreq, now + 1.2);
+    osc2.frequency.exponentialRampToValueAtTime(targetFreq * 1.015, now + 1.2);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(baseFreq * 3, now);
+    filter.frequency.exponentialRampToValueAtTime(targetFreq * 4, now + 1.2);
+    filter.Q.value = 4.0;
+
+    masterGain.gain.setValueAtTime(0.01, now);
+    masterGain.gain.linearRampToValueAtTime(0.25, now + 0.2);
+
+    osc1.connect(filter);
+    osc2.connect(filter);
+    filter.connect(masterGain);
+    masterGain.connect(this.ctx.destination);
+
+    osc1.start(now);
+    osc2.start(now);
+
+    this.throttleGain = masterGain;
+    this.activeNodes.push(osc1, osc2, filter, masterGain);
+
+    // If Turbocharged, add turbo spool whine and wastegate pop
+    if (isTurbo) {
+      const turboOsc = this.ctx.createOscillator();
+      const turboGain = this.ctx.createGain();
+      turboOsc.type = 'sine';
+      turboOsc.frequency.setValueAtTime(800, now);
+      turboOsc.frequency.exponentialRampToValueAtTime(3200, now + 1.2);
+
+      turboGain.gain.setValueAtTime(0.001, now);
+      turboGain.gain.linearRampToValueAtTime(0.06, now + 1.0);
+
+      turboOsc.connect(turboGain);
+      turboGain.connect(this.ctx.destination);
+      turboOsc.start(now);
+      this.activeNodes.push(turboOsc, turboGain);
+    }
+  }
+
+  _synthesizeElectric(now, isHyper = false) {
+    const baseFreq = isHyper ? 320 : 220;
+    const targetFreq = isHyper ? 1400 : 780;
+
+    const osc = this.ctx.createOscillator();
+    const oscHarmonic = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+
+    osc.type = 'sine';
+    oscHarmonic.type = 'triangle';
+
+    osc.frequency.setValueAtTime(baseFreq, now);
+    osc.frequency.exponentialRampToValueAtTime(targetFreq, now + 1.4);
+
+    oscHarmonic.frequency.setValueAtTime(baseFreq * 2, now);
+    oscHarmonic.frequency.exponentialRampToValueAtTime(targetFreq * 2.02, now + 1.4);
+
+    gain.gain.setValueAtTime(0.01, now);
+    gain.gain.linearRampToValueAtTime(0.2, now + 0.3);
+
+    osc.connect(gain);
+    oscHarmonic.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    osc.start(now);
+    oscHarmonic.start(now);
+
+    this.throttleGain = gain;
+    this.activeNodes.push(osc, oscHarmonic, gain);
+  }
+
+  _synthesizeSteam(now) {
+    // Rhythmic puffing pulse
+    const bufferSize = this.ctx.sampleRate * 2.5;
+    const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
+    const output = noiseBuffer.getChannelData(0);
+    for (let i = 0; i < bufferSize; i++) {
+      output[i] = Math.random() * 2 - 1;
+    }
+
+    const whiteNoise = this.ctx.createBufferSource();
+    whiteNoise.buffer = noiseBuffer;
+
+    const filter = this.ctx.createBiquadFilter();
+    filter.type = 'bandpass';
+    filter.frequency.value = 450;
+    filter.Q.value = 2.0;
+
+    const gain = this.ctx.createGain();
+    gain.gain.setValueAtTime(0.12, now);
+
+    whiteNoise.connect(filter);
+    filter.connect(gain);
+    gain.connect(this.ctx.destination);
+
+    whiteNoise.start(now);
+    this.activeNodes.push(whiteNoise, filter, gain);
+    this.throttleGain = gain;
+  }
+}
+
+const audioEngine = new CarAudioEngine();
+
+
+/* ==========================================================================
+   2. CAR VECTOR BLUEPRINTS & SILHOUETTE RENDERER
+   ========================================================================== */
+/**
+ * The History of Cars - Vector Art & Silhouette Engine
+ * Generates custom, stylized SVG automotive silhouettes with glowing headlights,
+ * wheels with rotating hubs, and authentic bodywork contours.
+ */
+
+function renderCarSvg(car, options = {}) {
+  const { width = 480, height = 220, isInteractive = true } = options;
+  const theme = car.colorTheme || '#38bdf8';
+  const id = car.id;
+  
+  // Specific custom SVG profiles for key vehicle types
+  switch (car.svgSilhouette) {
+    case 'steam-cart':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="boiler-${id}" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stop-color="#b45309" />
+              <stop offset="100%" stop-color="#78350f" />
+            </radialGradient>
+          </defs>
+          <!-- Steam Smoke Puffs -->
+          <circle cx="80" cy="50" r="14" fill="#ffffff" opacity="0.25" class="steam-particle" />
+          <circle cx="95" cy="30" r="22" fill="#ffffff" opacity="0.18" class="steam-particle" />
+          <circle cx="115" cy="15" r="30" fill="#ffffff" opacity="0.1" class="steam-particle" />
+          <!-- Heavy Front Copper Boiler -->
+          <ellipse cx="105" cy="130" rx="45" ry="50" fill="url(#boiler-${id})" stroke="#d97706" stroke-width="3" />
+          <rect x="95" y="65" width="20" height="40" fill="#451a03" stroke="#92400e" stroke-width="2" rx="4" />
+          <!-- Steam Pipes & Levers -->
+          <path d="M110 75 Q150 70 190 120" stroke="#b45309" stroke-width="6" fill="none" />
+          <line x1="175" y1="120" x2="230" y2="70" stroke="#78350f" stroke-width="5" />
+          <!-- Massive Wooden Beam Chassis -->
+          <rect x="80" y="145" width="360" height="22" fill="#713f12" stroke="#451a03" stroke-width="3" rx="3" />
+          <!-- High Driver Bench Seat -->
+          <path d="M210 145 L225 100 L265 100 L275 145 Z" fill="#451a03" stroke="#292524" stroke-width="2" />
+          <rect x="220" y="90" width="50" height="12" fill="#854d0e" rx="2" />
+          <!-- Front Single Drive Wheel -->
+          <g class="wheel-group">
+            <circle cx="105" cy="175" r="42" fill="#292524" stroke="#d97706" stroke-width="6" />
+            <circle cx="105" cy="175" r="10" fill="#d97706" />
+            <line x1="105" y1="133" x2="105" y2="217" stroke="#a16207" stroke-width="3" />
+            <line x1="63" y1="175" x2="147" y2="175" stroke="#a16207" stroke-width="3" />
+            <line x1="75" y1="145" x2="135" y2="205" stroke="#a16207" stroke-width="3" />
+            <line x1="75" y1="205" x2="135" y2="145" stroke="#a16207" stroke-width="3" />
+          </g>
+          <!-- Rear Giant Wagon Wheels -->
+          <g class="wheel-group">
+            <circle cx="380" cy="165" r="56" fill="#1c1917" stroke="#78350f" stroke-width="8" />
+            <circle cx="380" cy="165" r="12" fill="#d97706" />
+            <line x1="380" y1="109" x2="380" y2="221" stroke="#a16207" stroke-width="4" />
+            <line x1="324" y1="165" x2="436" y2="165" stroke="#a16207" stroke-width="4" />
+            <line x1="340" y1="125" x2="420" y2="205" stroke="#a16207" stroke-width="3" />
+            <line x1="340" y1="205" x2="420" y2="125" stroke="#a16207" stroke-width="3" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="225" rx="190" ry="8" fill="#000000" opacity="0.4" />
+        </svg>
+      `;
+
+    case 'motorwagen':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="brass-${id}">
+              <stop offset="0%" stop-color="#fef08a" />
+              <stop offset="100%" stop-color="#ca8a04" />
+            </radialGradient>
+          </defs>
+          <!-- Tubular Steel Framework -->
+          <path d="M120 180 L220 175 L360 175 L330 115 L220 120 L150 145 Z" fill="none" stroke="#262626" stroke-width="5" />
+          <line x1="120" y1="180" x2="220" y2="120" stroke="#171717" stroke-width="4" />
+          <line x1="220" y1="175" x2="260" y2="90" stroke="#171717" stroke-width="4" />
+          <line x1="360" y1="175" x2="300" y2="120" stroke="#171717" stroke-width="4" />
+          <!-- Steering Tiller Column -->
+          <line x1="120" y1="180" x2="160" y2="95" stroke="#ca8a04" stroke-width="4" />
+          <line x1="145" y1="95" x2="175" y2="95" stroke="#171717" stroke-width="5" />
+          <!-- Leather Padded Bench Seat -->
+          <path d="M220 120 Q240 70 270 75 L285 118 Z" fill="#451a03" stroke="#78350f" stroke-width="3" />
+          <rect x="230" y="112" width="60" height="10" fill="#713f12" rx="3" />
+          <!-- Rear Horizontal Flywheel Engine -->
+          <ellipse cx="330" cy="155" rx="28" ry="12" fill="#78716c" stroke="#44403c" stroke-width="3" />
+          <circle cx="330" cy="155" r="6" fill="#ca8a04" />
+          <!-- Front Single Wire-Spoke Wheel -->
+          <g class="wheel-group">
+            <circle cx="120" cy="180" r="38" fill="none" stroke="#52525b" stroke-width="3" />
+            <circle cx="120" cy="180" r="5" fill="#ca8a04" />
+            ${Array.from({length: 12}).map((_, i) => {
+              const angle = (i * 30) * (Math.PI / 180);
+              const x2 = 120 + 38 * Math.cos(angle);
+              const y2 = 180 + 38 * Math.sin(angle);
+              return `<line x1="120" y1="180" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#a1a1aa" stroke-width="1" />`;
+            }).join('')}
+          </g>
+          <!-- Large Rear Wire-Spoke Wheel -->
+          <g class="wheel-group">
+            <circle cx="360" cy="165" r="58" fill="none" stroke="#52525b" stroke-width="4" />
+            <circle cx="360" cy="165" r="8" fill="#ca8a04" />
+            ${Array.from({length: 16}).map((_, i) => {
+              const angle = (i * 22.5) * (Math.PI / 180);
+              const x2 = 360 + 58 * Math.cos(angle);
+              const y2 = 165 + 58 * Math.sin(angle);
+              return `<line x1="360" y1="165" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#a1a1aa" stroke-width="1.2" />`;
+            }).join('')}
+          </g>
+          <!-- Soft Shadow -->
+          <ellipse cx="240" cy="225" rx="160" ry="7" fill="#000000" opacity="0.4" />
+        </svg>
+      `;
+
+    case 'bullet-car': // La Jamais Contente
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="metal-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#e2e8f0" />
+              <stop offset="60%" stop-color="#94a3b8" />
+              <stop offset="100%" stop-color="#475569" />
+            </linearGradient>
+          </defs>
+          <!-- High Exposed Driver -->
+          <circle cx="270" cy="95" r="14" fill="#38bdf8" />
+          <path d="M260 110 L285 110 L290 135 L255 135 Z" fill="#1e293b" />
+          <line x1="280" y1="115" x2="260" y2="125" stroke="#e2e8f0" stroke-width="3" />
+          <!-- Cigar Torpedo Aerodynamic Body -->
+          <path d="M60 148 C100 120 380 120 440 148 C420 170 360 178 60 178 Z" fill="url(#metal-${id})" stroke="#cbd5e1" stroke-width="2" />
+          <!-- Nose Conical Tip -->
+          <polygon points="440,148 470,154 440,160" fill="#94a3b8" />
+          <!-- Rivet seams along torpedo -->
+          <line x1="140" y1="128" x2="140" y2="175" stroke="#334155" stroke-dasharray="3,3" stroke-width="2" />
+          <line x1="240" y1="124" x2="240" y2="177" stroke="#334155" stroke-dasharray="3,3" stroke-width="2" />
+          <line x1="340" y1="126" x2="340" y2="175" stroke="#334155" stroke-dasharray="3,3" stroke-width="2" />
+          <!-- Electric Battery/Motor Sump Box -->
+          <rect x="180" y="172" width="160" height="18" fill="#1e293b" rx="4" />
+          <!-- Front & Rear Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="180" r="34" fill="#1e293b" stroke="#64748b" stroke-width="5" />
+            <circle cx="140" cy="180" r="8" fill="#e2e8f0" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="360" cy="180" r="34" fill="#1e293b" stroke="#64748b" stroke-width="5" />
+            <circle cx="360" cy="180" r="8" fill="#e2e8f0" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="216" rx="180" ry="7" fill="#000000" opacity="0.45" />
+        </svg>
+      `;
+
+    case 'model-t':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="body-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#262626" />
+              <stop offset="100%" stop-color="#0a0a0a" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="440,150 510,120 510,210 440,165" fill="#fef08a" opacity="0.25" class="headlight-beam" />
+          <!-- Brass Lanterns -->
+          <circle cx="435" cy="155" r="9" fill="#eab308" stroke="#ca8a04" stroke-width="2" class="headlight" />
+          <!-- Tall Carriage Cabin Top -->
+          <path d="M120 95 L140 60 L330 60 L345 95 Z" fill="#171717" stroke="#404040" stroke-width="2" />
+          <!-- Window Pillars & Folding Windscreen -->
+          <rect x="145" y="66" width="70" height="42" fill="#38bdf8" opacity="0.3" stroke="#262626" stroke-width="2" />
+          <rect x="235" y="66" width="85" height="42" fill="#38bdf8" opacity="0.3" stroke="#262626" stroke-width="2" />
+          <line x1="330" y1="60" x2="335" y2="115" stroke="#eab308" stroke-width="3" />
+          <!-- Main Body Tub -->
+          <path d="M110 115 L345 115 L350 145 L430 145 L430 170 L110 170 Z" fill="url(#body-${id})" stroke="#262626" stroke-width="2" />
+          <!-- Louvered Engine Hood -->
+          <line x1="370" y1="125" x2="370" y2="140" stroke="#525252" stroke-width="2" />
+          <line x1="385" y1="125" x2="385" y2="140" stroke="#525252" stroke-width="2" />
+          <line x1="400" y1="125" x2="400" y2="140" stroke="#525252" stroke-width="2" />
+          <line x1="415" y1="125" x2="415" y2="140" stroke="#525252" stroke-width="2" />
+          <!-- Sweeping Fenders & Running Board -->
+          <path d="M85 170 C95 135 155 135 170 170 L340 170 C355 135 415 135 435 170" fill="none" stroke="#171717" stroke-width="8" />
+          <!-- Spoke Wheels -->
+          <g class="wheel-group">
+            <circle cx="130" cy="180" r="38" fill="#171717" stroke="#713f12" stroke-width="6" />
+            <circle cx="130" cy="180" r="8" fill="#ca8a04" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="390" cy="180" r="38" fill="#171717" stroke="#713f12" stroke-width="6" />
+            <circle cx="390" cy="180" r="8" fill="#ca8a04" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="222" rx="190" ry="7" fill="#000000" opacity="0.45" />
+        </svg>
+      `;
+
+    case 'atlantic-coupe': // Bugatti Type 57SC Atlantic
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="atlantic-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="40%" stop-color="#0284c7" />
+              <stop offset="100%" stop-color="#082f49" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="455,145 520,110 520,200 455,160" fill="#bae6fd" opacity="0.25" class="headlight-beam" />
+          <!-- Art Deco Teardrop Body -->
+          <path d="M70 160 C80 100 180 65 260 70 C340 75 420 115 450 145 C455 160 440 170 410 170 C370 170 340 135 300 135 C240 135 190 170 110 170 Z" fill="url(#atlantic-${id})" stroke="#0369a1" stroke-width="2" />
+          <!-- Riveted Dorsal Fin (The defining Atlantic feature!) -->
+          <path d="M90 150 C120 90 200 62 270 65 C340 68 400 105 440 140" fill="none" stroke="#e0f2fe" stroke-width="3" stroke-dasharray="4,3" />
+          <!-- Small Kidney Windows -->
+          <path d="M210 85 C240 80 270 82 285 105 L215 105 Z" fill="#0284c7" opacity="0.4" stroke="#e0f2fe" stroke-width="1.5" />
+          <!-- Front Swept Teardrop Fenders -->
+          <path d="M340 170 C350 115 435 115 450 170" fill="none" stroke="#0284c7" stroke-width="10" />
+          <circle cx="445" cy="148" r="9" fill="#fef08a" stroke="#ca8a04" stroke-width="2" class="headlight" />
+          <!-- Rear Covered Spats Fender -->
+          <path d="M80 170 C90 120 180 120 190 170" fill="none" stroke="#0284c7" stroke-width="12" />
+          <!-- Spoke Wire Wheels with Knockoffs -->
+          <g class="wheel-group">
+            <circle cx="140" cy="175" r="36" fill="#0f172a" stroke="#94a3b8" stroke-width="6" />
+            <circle cx="140" cy="175" r="10" fill="#38bdf8" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="395" cy="175" r="36" fill="#0f172a" stroke="#94a3b8" stroke-width="6" />
+            <circle cx="395" cy="175" r="10" fill="#38bdf8" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="216" rx="200" ry="7" fill="#000000" opacity="0.5" />
+        </svg>
+      `;
+
+    case 'beetle':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="beetle-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#38bdf8" />
+              <stop offset="100%" stop-color="#0369a1" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="440,150 515,120 515,200 440,165" fill="#fef08a" opacity="0.25" class="headlight-beam" />
+          <circle cx="435" cy="152" r="11" fill="#fef08a" stroke="#cbd5e1" stroke-width="2" class="headlight" />
+          <!-- Round Bubble Roof & Body -->
+          <path d="M85 160 C90 110 160 65 250 65 C340 65 410 110 440 160 L435 170 L85 170 Z" fill="url(#beetle-${id})" stroke="#0284c7" stroke-width="2" />
+          <!-- Curved Windows -->
+          <path d="M165 110 C180 80 230 75 245 75 L245 112 Z" fill="#bae6fd" opacity="0.4" stroke="#0284c7" stroke-width="1.5" />
+          <path d="M255 75 C275 75 320 80 335 110 L255 110 Z" fill="#bae6fd" opacity="0.4" stroke="#0284c7" stroke-width="1.5" />
+          <!-- Pronounced Rounded Fenders -->
+          <path d="M80 170 C90 120 180 120 190 170" fill="none" stroke="#0284c7" stroke-width="12" />
+          <path d="M330 170 C340 120 430 120 445 170" fill="none" stroke="#0284c7" stroke-width="12" />
+          <!-- Chrome Hubcap Wheels -->
+          <g class="wheel-group">
+            <circle cx="135" cy="175" r="36" fill="#1e293b" stroke="#cbd5e1" stroke-width="5" />
+            <circle cx="135" cy="175" r="14" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="385" cy="175" r="36" fill="#1e293b" stroke="#cbd5e1" stroke-width="5" />
+            <circle cx="385" cy="175" r="14" fill="#f1f5f9" stroke="#94a3b8" stroke-width="2" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="216" rx="190" ry="7" fill="#000000" opacity="0.45" />
+        </svg>
+      `;
+
+    case 'gullwing': // Mercedes-Benz 300 SL
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="silver-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#f1f5f9" />
+              <stop offset="50%" stop-color="#cbd5e1" />
+              <stop offset="100%" stop-color="#64748b" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="455,145 520,110 520,195 455,160" fill="#fef08a" opacity="0.3" class="headlight-beam" />
+          <circle cx="450" cy="148" r="10" fill="#fef08a" stroke="#e2e8f0" stroke-width="2" class="headlight" />
+          <!-- Low-Slung Gullwing Silhouette -->
+          <path d="M70 155 C80 135 150 115 210 110 C240 75 300 75 340 108 C390 112 445 125 460 148 C465 160 440 168 400 168 C350 168 330 135 290 135 C230 135 200 168 110 168 Z" fill="url(#silver-${id})" stroke="#94a3b8" stroke-width="2" />
+          <!-- Gullwing Door Cutline (Roof Pivot) -->
+          <path d="M245 76 L250 110 L300 110 L310 77" fill="none" stroke="#475569" stroke-width="2" stroke-dasharray="3,2" />
+          <!-- Side Fender "Eyebrow" Flairs -->
+          <path d="M100 140 Q140 128 180 140" fill="none" stroke="#475569" stroke-width="3" />
+          <path d="M350 140 Q390 128 430 140" fill="none" stroke="#475569" stroke-width="3" />
+          <!-- Side Vent Strakes -->
+          <line x1="335" y1="130" x2="355" y2="130" stroke="#334155" stroke-width="3" />
+          <line x1="335" y1="136" x2="355" y2="136" stroke="#334155" stroke-width="3" />
+          <!-- Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="35" fill="#1e293b" stroke="#cbd5e1" stroke-width="6" />
+            <circle cx="140" cy="170" r="12" fill="#3b82f6" stroke="#cbd5e1" stroke-width="2" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="390" cy="170" r="35" fill="#1e293b" stroke="#cbd5e1" stroke-width="6" />
+            <circle cx="390" cy="170" r="12" fill="#3b82f6" stroke="#cbd5e1" stroke-width="2" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="200" ry="6" fill="#000000" opacity="0.5" />
+        </svg>
+      `;
+
+    case 'porsche-911':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="p911-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ea580c" />
+              <stop offset="50%" stop-color="#c2410c" />
+              <stop offset="100%" stop-color="#7c2d12" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="455,140 520,105 520,195 455,155" fill="#fef08a" opacity="0.3" class="headlight-beam" />
+          <circle cx="448" cy="142" r="11" fill="#fef08a" stroke="#e2e8f0" stroke-width="2" class="headlight" />
+          <!-- The Iconic Unmistakable 911 Flyline -->
+          <path d="M70 155 C75 140 100 128 140 120 C185 80 270 70 340 75 C370 100 420 125 455 140 C465 155 440 168 400 168 C355 168 335 135 290 135 C230 135 200 168 110 168 Z" fill="url(#p911-${id})" stroke="#9a3412" stroke-width="2" />
+          <!-- Targa / Coupe Quarter Window Curve -->
+          <path d="M210 115 C240 85 295 85 330 115 Z" fill="#fed7aa" opacity="0.35" stroke="#7c2d12" stroke-width="1.5" />
+          <!-- Fuchs Cloverleaf Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="35" fill="#18181b" stroke="#71717a" stroke-width="5" />
+            <circle cx="140" cy="170" r="14" fill="#000000" stroke="#e4e4e7" stroke-width="3" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="390" cy="170" r="35" fill="#18181b" stroke="#71717a" stroke-width="5" />
+            <circle cx="390" cy="170" r="14" fill="#000000" stroke="#e4e4e7" stroke-width="3" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="200" ry="6" fill="#000000" opacity="0.5" />
+        </svg>
+      `;
+
+    case 'miura': // Lamborghini Miura
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="miura-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fbbf24" />
+              <stop offset="50%" stop-color="#f59e0b" />
+              <stop offset="100%" stop-color="#b45309" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="460,140 520,105 520,195 460,155" fill="#fef08a" opacity="0.3" class="headlight-beam" />
+          <!-- Pop-up Headlight with Eyelash details -->
+          <ellipse cx="448" cy="138" rx="10" ry="7" fill="#fef08a" stroke="#171717" stroke-width="2" class="headlight" />
+          <line x1="440" y1="128" x2="442" y2="133" stroke="#171717" stroke-width="2" />
+          <line x1="448" y1="126" x2="448" y2="132" stroke="#171717" stroke-width="2" />
+          <line x1="456" y1="128" x2="454" y2="133" stroke="#171717" stroke-width="2" />
+          <!-- Sensuous Mid-Engine S-curve Profile -->
+          <path d="M60 155 C70 135 120 115 170 110 C210 82 280 80 320 105 C380 110 440 120 465 142 C470 155 450 166 405 166 C360 166 340 135 300 135 C230 135 200 166 110 166 Z" fill="url(#miura-${id})" stroke="#b45309" stroke-width="2" />
+          <!-- Rear Window Louvers -->
+          <line x1="190" y1="112" x2="225" y2="112" stroke="#171717" stroke-width="2" />
+          <line x1="200" y1="104" x2="235" y2="104" stroke="#171717" stroke-width="2" />
+          <line x1="210" y1="96" x2="245" y2="96" stroke="#171717" stroke-width="2" />
+          <!-- Campagnolo Gold Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="168" r="36" fill="#18181b" stroke="#ca8a04" stroke-width="6" />
+            <circle cx="140" cy="168" r="10" fill="#eab308" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="395" cy="168" r="36" fill="#18181b" stroke="#ca8a04" stroke-width="6" />
+            <circle cx="395" cy="168" r="10" fill="#eab308" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="208" rx="205" ry="6" fill="#000000" opacity="0.5" />
+        </svg>
+      `;
+
+    case 'countach': // Lamborghini Countach
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="countach-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fef08a" />
+              <stop offset="40%" stop-color="#facc15" />
+              <stop offset="100%" stop-color="#a16207" />
+            </linearGradient>
+          </defs>
+          <!-- Pop-up Headlight Beam -->
+          <polygon points="465,145 520,110 520,200 465,160" fill="#fef08a" opacity="0.35" class="headlight-beam" />
+          <!-- Sharp Origami Wedge Body -->
+          <polygon points="50,152 70,140 180,115 280,90 380,125 470,148 465,168 410,168 360,138 290,138 210,168 100,168" fill="url(#countach-${id})" stroke="#ca8a04" stroke-width="2" />
+          <!-- Scissor Door Cutline -->
+          <line x1="280" y1="90" x2="300" y2="148" stroke="#713f12" stroke-width="2" />
+          <!-- Massive Rear Intake Shoulder Box & NACA Duct -->
+          <polygon points="160,120 220,118 200,132" fill="#171717" />
+          <polygon points="120,115 155,100 170,120 135,125" fill="#ca8a04" stroke="#713f12" stroke-width="1.5" />
+          <!-- Iconic Countach Revolver Phone-Dial Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="36" fill="#18181b" stroke="#cbd5e1" stroke-width="6" />
+            <circle cx="140" cy="170" r="16" fill="#f8fafc" stroke="#475569" stroke-width="2" />
+            <!-- Phone dial holes -->
+            <circle cx="140" cy="160" r="3.5" fill="#18181b" />
+            <circle cx="149" cy="167" r="3.5" fill="#18181b" />
+            <circle cx="146" cy="178" r="3.5" fill="#18181b" />
+            <circle cx="134" cy="178" r="3.5" fill="#18181b" />
+            <circle cx="131" cy="167" r="3.5" fill="#18181b" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="400" cy="170" r="36" fill="#18181b" stroke="#cbd5e1" stroke-width="6" />
+            <circle cx="400" cy="170" r="16" fill="#f8fafc" stroke="#475569" stroke-width="2" />
+            <circle cx="400" cy="160" r="3.5" fill="#18181b" />
+            <circle cx="409" cy="167" r="3.5" fill="#18181b" />
+            <circle cx="406" cy="178" r="3.5" fill="#18181b" />
+            <circle cx="394" cy="178" r="3.5" fill="#18181b" />
+            <circle cx="391" cy="167" r="3.5" fill="#18181b" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="210" ry="6" fill="#000000" opacity="0.55" />
+        </svg>
+      `;
+
+    case 'ferrari-f40':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="f40-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#ef4444" />
+              <stop offset="50%" stop-color="#dc2626" />
+              <stop offset="100%" stop-color="#991b1b" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="465,145 525,110 525,200 465,160" fill="#fef08a" opacity="0.35" class="headlight-beam" />
+          <!-- Twin Pop-up Lights / Lexan covers -->
+          <rect x="430" y="132" width="22" height="8" fill="#fef08a" stroke="#7f1d1d" stroke-width="1.5" class="headlight" />
+          <!-- Massive Squared Rear Wing -->
+          <path d="M50 115 L105 115 L105 155 L65 155 Z" fill="#b91c1c" stroke="#7f1d1d" stroke-width="2" />
+          <line x1="50" y1="112" x2="115" y2="112" stroke="#dc2626" stroke-width="5" />
+          <!-- Low Slung Carbon-Kevlar Wedge Body -->
+          <polygon points="70,150 110,140 210,120 280,95 380,122 470,145 465,168 410,168 360,138 290,138 210,168 100,168" fill="url(#f40-${id})" stroke="#b91c1c" stroke-width="2" />
+          <!-- Twin Front Hood NACA Ducts -->
+          <polygon points="380,125 410,132 400,138" fill="#18181b" />
+          <polygon points="340,122 370,129 360,135" fill="#18181b" />
+          <!-- Slotted Lexan Rear Engine Cover Louvers -->
+          <line x1="160" y1="125" x2="190" y2="125" stroke="#18181b" stroke-width="3" />
+          <line x1="170" y1="117" x2="200" y2="117" stroke="#18181b" stroke-width="3" />
+          <line x1="180" y1="109" x2="210" y2="109" stroke="#18181b" stroke-width="3" />
+          <!-- Speedline 5-Spoke Star Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="36" fill="#18181b" stroke="#cbd5e1" stroke-width="5" />
+            <circle cx="140" cy="170" r="12" fill="#ef4444" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="400" cy="170" r="36" fill="#18181b" stroke="#cbd5e1" stroke-width="5" />
+            <circle cx="400" cy="170" r="12" fill="#ef4444" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="210" ry="6" fill="#000000" opacity="0.6" />
+        </svg>
+      `;
+
+    case 'mclaren-f1':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="f1-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#fb923c" />
+              <stop offset="50%" stop-color="#f97316" />
+              <stop offset="100%" stop-color="#c2410c" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="460,145 520,110 520,200 460,160" fill="#fef08a" opacity="0.35" class="headlight-beam" />
+          <!-- Roof Air Snorkel Scoop -->
+          <path d="M260 75 Q275 62 290 62 L300 76 Z" fill="#18181b" stroke="#ea580c" stroke-width="2" />
+          <!-- Central Cockpit Greenhouse -->
+          <path d="M200 115 C220 75 290 75 330 115 Z" fill="#0f172a" opacity="0.6" stroke="#c2410c" stroke-width="1.5" />
+          <!-- Pure Carbon Monocoque Curves -->
+          <path d="M60 152 C70 135 140 120 180 115 C210 80 290 80 340 108 C390 112 445 125 465 145 C470 158 440 168 400 168 C355 168 335 138 290 138 C230 138 200 168 110 168 Z" fill="url(#f1-${id})" stroke="#c2410c" stroke-width="2" />
+          <!-- OZ Racing 5-Spoke Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="36" fill="#18181b" stroke="#94a3b8" stroke-width="5" />
+            <circle cx="140" cy="170" r="10" fill="#000000" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="395" cy="170" r="36" fill="#18181b" stroke="#94a3b8" stroke-width="5" />
+            <circle cx="395" cy="170" r="10" fill="#000000" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="205" ry="6" fill="#000000" opacity="0.55" />
+        </svg>
+      `;
+
+    case 'veyron': // Bugatti Veyron 16.4
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="veyron-blue-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#3b82f6" />
+              <stop offset="100%" stop-color="#1d4ed8" />
+            </linearGradient>
+            <linearGradient id="veyron-dark-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#1e293b" />
+              <stop offset="100%" stop-color="#020617" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="460,145 525,110 525,200 460,160" fill="#38bdf8" opacity="0.35" class="headlight-beam" />
+          <!-- Active Rear Spoiler / Airbrake deployed slightly -->
+          <line x1="70" y1="125" x2="115" y2="120" stroke="#3b82f6" stroke-width="4" />
+          <line x1="85" y1="125" x2="85" y2="135" stroke="#0f172a" stroke-width="2" />
+          <!-- Base Dark Muscular Body (Lower & Rear) -->
+          <path d="M60 155 C70 135 140 120 180 115 C210 82 290 82 340 108 C390 112 450 125 465 148 C470 160 440 168 400 168 C355 168 335 138 290 138 C230 138 200 168 110 168 Z" fill="url(#veyron-dark-${id})" stroke="#0f172a" stroke-width="2" />
+          <!-- Iconic Two-Tone Side Horseshoe Ellipse -->
+          <path d="M170 120 C230 110 320 110 350 145 C350 165 320 168 280 168 C220 168 190 145 170 120 Z" fill="url(#veyron-blue-${id})" stroke="#60a5fa" stroke-width="2" />
+          <!-- Front Horseshoe Radiator Grille -->
+          <ellipse cx="460" cy="155" rx="8" ry="12" fill="#0f172a" stroke="#cbd5e1" stroke-width="2" />
+          <!-- Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="36" fill="#0f172a" stroke="#94a3b8" stroke-width="6" />
+            <circle cx="140" cy="170" r="14" fill="#1e3a8a" stroke="#cbd5e1" stroke-width="2" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="395" cy="170" r="36" fill="#0f172a" stroke="#94a3b8" stroke-width="6" />
+            <circle cx="395" cy="170" r="14" fill="#1e3a8a" stroke="#cbd5e1" stroke-width="2" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="210" ry="6" fill="#000000" opacity="0.6" />
+        </svg>
+      `;
+
+    case 'rimac-nevera':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="rimac-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#06b6d4" />
+              <stop offset="50%" stop-color="#0891b2" />
+              <stop offset="100%" stop-color="#0e7490" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="465,145 525,110 525,200 465,160" fill="#22d3ee" opacity="0.4" class="headlight-beam" />
+          <!-- LED Headlight Strip -->
+          <line x1="440" y1="140" x2="465" y2="148" stroke="#a5f3fc" stroke-width="3" class="headlight" />
+          <!-- Sculpted Carbon Body with Cravat Side Aero Tunnel -->
+          <path d="M55 152 C70 135 140 120 180 115 C210 82 290 82 340 108 C390 112 450 125 470 145 C475 160 440 168 400 168 C355 168 335 138 290 138 C230 138 200 168 110 168 Z" fill="url(#rimac-${id})" stroke="#0891b2" stroke-width="2" />
+          <!-- Iconic Necktie / Cravat Side Air Intake -->
+          <path d="M220 125 Q250 145 280 130 Q260 155 230 150 Z" fill="#020617" stroke="#22d3ee" stroke-width="1.5" />
+          <!-- Neon Electric Cyan Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="36" fill="#020617" stroke="#22d3ee" stroke-width="4" />
+            <circle cx="140" cy="170" r="14" fill="#0891b2" stroke="#a5f3fc" stroke-width="2" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="400" cy="170" r="36" fill="#020617" stroke="#22d3ee" stroke-width="4" />
+            <circle cx="400" cy="170" r="14" fill="#0891b2" stroke="#a5f3fc" stroke-width="2" />
+          </g>
+          <!-- Electric Neon Ground Glow -->
+          <ellipse cx="260" cy="208" rx="205" ry="7" fill="#06b6d4" opacity="0.35" class="neon-underglow" />
+        </svg>
+      `;
+
+    case 'cybertruck':
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="steel-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#94a3b8" />
+              <stop offset="45%" stop-color="#64748b" />
+              <stop offset="100%" stop-color="#334155" />
+            </linearGradient>
+          </defs>
+          <!-- Front Full-Width Lightbar Beam -->
+          <polygon points="460,135 525,115 525,190 460,145" fill="#f8fafc" opacity="0.4" class="headlight-beam" />
+          <line x1="455" y1="135" x2="465" y2="135" stroke="#ffffff" stroke-width="4" class="headlight" />
+          <!-- The Unmistakable Triangle Origami Exoskeleton -->
+          <polygon points="65,160 70,128 250,72 460,135 465,168 415,168 380,145 320,145 285,168 185,168 150,145 95,145 65,160" fill="url(#steel-${id})" stroke="#cbd5e1" stroke-width="2.5" />
+          <!-- Angular Window Greenhouse -->
+          <polygon points="175,130 250,82 340,118 340,132 175,130" fill="#0f172a" opacity="0.75" stroke="#94a3b8" stroke-width="1.5" />
+          <!-- Angular Wheel Arches & Cyber Wheels -->
+          <g class="wheel-group">
+            <polygon points="105,170 120,145 160,145 175,170 160,195 120,195" fill="#020617" stroke="#475569" stroke-width="4" />
+            <circle cx="140" cy="170" r="12" fill="#334155" />
+          </g>
+          <g class="wheel-group">
+            <polygon points="365,170 380,145 420,145 435,170 420,195 380,195" fill="#020617" stroke="#475569" stroke-width="4" />
+            <circle cx="400" cy="170" r="12" fill="#334155" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="214" rx="205" ry="6" fill="#000000" opacity="0.55" />
+        </svg>
+      `;
+
+    case 'safety-shield': // Volvo 3-point seatbelt milestone
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <radialGradient id="shield-glow-${id}">
+              <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.8" />
+              <stop offset="100%" stop-color="#0284c7" stop-opacity="0.1" />
+            </radialGradient>
+          </defs>
+          <!-- Glowing Safety Crest -->
+          <path d="M260 40 L340 70 L340 140 Q260 200 260 200 Q180 140 180 70 Z" fill="url(#shield-glow-${id})" stroke="#38bdf8" stroke-width="4" />
+          <!-- The V-shaped 3-Point Belt Straps -->
+          <line x1="210" y1="75" x2="280" y2="155" stroke="#f8fafc" stroke-width="14" stroke-linecap="round" />
+          <line x1="210" y1="155" x2="280" y2="155" stroke="#f8fafc" stroke-width="14" stroke-linecap="round" />
+          <!-- The Iconic Center Latch Buckle -->
+          <rect x="270" y="145" width="26" height="22" fill="#ef4444" rx="4" stroke="#ffffff" stroke-width="2" />
+          <text x="260" y="225" font-family="sans-serif" font-size="14" font-weight="bold" fill="#38bdf8" text-anchor="middle">LIFE-SAVING OPEN PATENT (1959)</text>
+        </svg>
+      `;
+
+    case 'future-aero': // 2030+ Morphing Hyper-GT
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="future-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="#10b981" />
+              <stop offset="50%" stop-color="#059669" />
+              <stop offset="100%" stop-color="#047857" />
+            </linearGradient>
+          </defs>
+          <!-- Holographic Light Sweep -->
+          <polygon points="465,145 525,100 525,210 465,160" fill="#34d399" opacity="0.45" class="headlight-beam" />
+          <!-- Morphing Aero Ribbon Body -->
+          <path d="M50 145 C60 120 120 100 170 95 C220 70 290 70 340 95 C410 100 460 120 480 140 C470 155 430 162 380 162 C330 162 310 140 270 140 C210 140 180 162 100 162 Z" fill="url(#future-${id})" stroke="#6ee7b7" stroke-width="2" />
+          <!-- Cockpit AI Holographic Dome -->
+          <path d="M210 98 Q260 75 310 98 Z" fill="#a7f3d0" opacity="0.4" stroke="#34d399" stroke-width="2" />
+          <!-- In-Wheel Flux Hubless Rings -->
+          <g class="wheel-group">
+            <circle cx="130" cy="162" r="32" fill="none" stroke="#10b981" stroke-width="6" />
+            <circle cx="130" cy="162" r="18" fill="none" stroke="#34d399" stroke-width="3" stroke-dasharray="8,4" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="410" cy="162" r="32" fill="none" stroke="#10b981" stroke-width="6" />
+            <circle cx="410" cy="162" r="18" fill="none" stroke="#34d399" stroke-width="3" stroke-dasharray="8,4" />
+          </g>
+          <!-- Magnetic Levitation Ground Glow -->
+          <ellipse cx="260" cy="202" rx="210" ry="8" fill="#10b981" opacity="0.4" class="neon-underglow" />
+        </svg>
+      `;
+
+    default: // Universal sleek sports silhouette tailored by theme color
+      return `
+        <svg viewBox="0 0 500 240" class="car-vector" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gen-${id}" x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stop-color="${theme}" />
+              <stop offset="100%" stop-color="#0f172a" />
+            </linearGradient>
+          </defs>
+          <!-- Headlight Beam -->
+          <polygon points="460,145 520,110 520,195 460,160" fill="#fef08a" opacity="0.3" class="headlight-beam" />
+          <circle cx="452" cy="148" r="9" fill="#fef08a" stroke="#cbd5e1" stroke-width="2" class="headlight" />
+          <!-- Aerodynamic Body -->
+          <path d="M65 155 C75 135 140 120 180 115 C215 80 285 80 335 110 C385 115 440 125 460 148 C465 160 440 168 400 168 C355 168 335 138 290 138 C230 138 200 168 110 168 Z" fill="url(#gen-${id})" stroke="${theme}" stroke-width="2" />
+          <!-- Cabin Windows -->
+          <path d="M210 115 C230 88 285 88 320 115 Z" fill="#bae6fd" opacity="0.35" stroke="#ffffff" stroke-width="1.5" />
+          <!-- Wheels -->
+          <g class="wheel-group">
+            <circle cx="140" cy="170" r="35" fill="#18181b" stroke="#cbd5e1" stroke-width="5" />
+            <circle cx="140" cy="170" r="12" fill="${theme}" />
+          </g>
+          <g class="wheel-group">
+            <circle cx="395" cy="170" r="35" fill="#18181b" stroke="#cbd5e1" stroke-width="5" />
+            <circle cx="395" cy="170" r="12" fill="${theme}" />
+          </g>
+          <!-- Ground Shadow -->
+          <ellipse cx="260" cy="210" rx="200" ry="6" fill="#000000" opacity="0.5" />
+        </svg>
+      `;
+  }
+}
+
+
+/* ==========================================================================
+   3. VEHICLE DATABASE & ERA TIMELINE SPECIFICATIONS
+   ========================================================================== */
+/**
+ * The History of Cars - Complete Dataset
+ * 44 iconic vehicles and historical milestones spanning 1769 to 2030+
+ */
+
+const ERAS = [
+  {
+    id: 'pioneers',
+    name: 'The Dawn of Motoring',
+    years: '1769 – 1919',
+    startYear: 1769,
+    endYear: 1919,
+    accentColor: '#bfa15f',
+    bgGradient: '#171615',
+    roadColor: '#22201e',
+    roadLine: '#47433c',
+    description: 'Steam beasts, brass lanterns, the birth of the internal combustion engine, and Henry Ford’s moving assembly line.'
+  },
+  {
+    id: 'artdeco',
+    name: 'The Roaring Twenties & Art Deco',
+    years: '1920 – 1939',
+    startYear: 1920,
+    endYear: 1939,
+    accentColor: '#5a7d9a',
+    bgGradient: '#14181f',
+    roadColor: '#1c2028',
+    roadLine: '#3a4454',
+    description: 'Breathtaking coachbuilt luxury, aerodynamic teardrop shapes, Grand Prix dominance, and the people’s car.'
+  },
+  {
+    id: 'postwar',
+    name: 'Post-War Boom & Tailfins',
+    years: '1940 – 1959',
+    startYear: 1940,
+    endYear: 1959,
+    accentColor: '#a85b4b',
+    bgGradient: '#1a1718',
+    roadColor: '#242021',
+    roadLine: '#4c4244',
+    description: 'Jet-age styling, chrome bumpers, European sports car rebirth, gullwing doors, and the invention of the 3-point seatbelt.'
+  },
+  {
+    id: 'golden',
+    name: 'The Golden Age: Muscle & Supercars',
+    years: '1960 – 1969',
+    startYear: 1960,
+    endYear: 1969,
+    accentColor: '#b87333',
+    bgGradient: '#1a1816',
+    roadColor: '#24211e',
+    roadLine: '#50473e',
+    description: 'American V8 horsepower wars, Le Mans showdowns between Ford & Ferrari, and the birth of the mid-engine supercar.'
+  },
+  {
+    id: 'wedge',
+    name: 'The Wedge & Turbo Era',
+    years: '1970 – 1989',
+    startYear: 1970,
+    endYear: 1989,
+    accentColor: '#637081',
+    bgGradient: '#16181b',
+    roadColor: '#1f2226',
+    roadLine: '#414750',
+    description: 'Origami wedge designs, turbocharging breakthroughs, Group B rallying, and Enzo Ferrari’s 201-mph finale.'
+  },
+  {
+    id: 'analog',
+    name: 'The Analog Peak & JDM Era',
+    years: '1990 – 2004',
+    startYear: 1990,
+    endYear: 2004,
+    accentColor: '#607274',
+    bgGradient: '#15171a',
+    roadColor: '#1e2124',
+    roadLine: '#3e454b',
+    description: 'Carbon fiber chassis, naturally aspirated high-revving engines, and Japanese twin-turbo technological triumphs.'
+  },
+  {
+    id: 'hypercar',
+    name: 'The Hypercar & Electric Era',
+    years: '2005 – 2024',
+    startYear: 2005,
+    endYear: 2024,
+    accentColor: '#4d6f85',
+    bgGradient: '#14171d',
+    roadColor: '#1d2129',
+    roadLine: '#3a4454',
+    description: 'The 1,000-hp barrier shattered, the hybrid Holy Trinity, and high-performance electric drivetrains.'
+  },
+  {
+    id: 'future',
+    name: 'The Frontier: Beyond 2025',
+    years: '2025 – 2035+',
+    startYear: 2025,
+    endYear: 2035,
+    accentColor: '#4d7262',
+    bgGradient: '#131815',
+    roadColor: '#1c221f',
+    roadLine: '#39463f',
+    description: 'Solid-state batteries, active aerodynamic efficiency, autonomous driver assistance, and sustainable fuels.'
+  }
+];
+
+const CARS = [
+  // ERA 1: PIONEERS (1769 - 1919)
+  {
+    id: 'cugnot-fardier',
+    photoUrl: 'photos/cugnot-fardier.jpg',
+    year: 1769,
+    name: 'Cugnot Fardier à vapeur',
+    subtitle: 'The First Self-Propelled Vehicle on Earth',
+    maker: 'Nicolas-Joseph Cugnot',
+    origin: 'France 🇫🇷',
+    eraId: 'pioneers',
+    category: 'milestone',
+    topSpeed: '4.8 km/h (3 mph)',
+    topSpeedKmh: 4.8,
+    power: 'approx. 2 hp',
+    engine: 'Two-cylinder steam boiler',
+    acceleration: 'N/A (Slower than walking pace)',
+    priceOriginal: 'Funded by the French Military',
+    priceToday: 'Invaluable (Paris Musée des Arts et Métiers)',
+    unitsBuilt: '2 prototypes',
+    tagline: 'A steam-powered tricycle designed to haul heavy artillery cannons.',
+    description: 'French inventor Nicolas-Joseph Cugnot built a massive three-wheeled steam vehicle to haul artillery for the French army. In 1771, it reportedly crashed into a brick wall—recording the world’s very first motor vehicle accident!',
+    funFact: 'It had to stop every 15 minutes to rebuild steam pressure in its front-mounted copper cauldron boiler.',
+    innovations: ['First self-propelled mechanical vehicle', 'First front-wheel drive system', 'First high-pressure steam road engine'],
+    soundProfile: 'steam-chug',
+    bodyType: 'Tricycle Steam Carriage',
+    colorTheme: '#8b5a2b',
+    svgSilhouette: 'steam-cart'
+  },
+  {
+    id: 'benz-patent-motorwagen',
+    photoUrl: 'photos/benz-patent-motorwagen.jpg',
+    year: 1886,
+    name: 'Benz Patent-Motorwagen',
+    subtitle: 'The Birth of the Modern Automobile',
+    maker: 'Karl Benz',
+    origin: 'Germany 🇩🇪',
+    eraId: 'pioneers',
+    category: 'milestone',
+    topSpeed: '16 km/h (10 mph)',
+    topSpeedKmh: 16,
+    power: '0.75 hp @ 400 RPM',
+    engine: '954cc Single-cylinder 4-stroke',
+    acceleration: 'N/A (Brisk jogging pace)',
+    priceOriginal: '600 Imperial German Marks (~$150 in 1886)',
+    priceToday: '$1,000,000+ (Historical replica/museum)',
+    unitsBuilt: 'approx. 25 units',
+    tagline: 'Patent DRP-37435: The spark that replaced horses forever.',
+    description: 'On January 29, 1886, Karl Benz applied for a patent for his "vehicle powered by a gas engine." Unlike motorized wagons, Benz engineered the chassis, engine, and drivetrain from the ground up as a single harmonious unit.',
+    funFact: 'Benz’s wife, Bertha Benz, took it on the world’s first long-distance road trip (66 miles) without telling Karl, using her hatpin to clean a clogged fuel line and garter to insulate the ignition wire!',
+    innovations: ['First internal combustion automobile', 'Differential gearing system', 'Electric trembler coil ignition', 'Water-cooled cylinder jacket'],
+    soundProfile: 'putt-putt',
+    bodyType: 'Tricycle Roadster',
+    colorTheme: '#111111',
+    svgSilhouette: 'motorwagen'
+  },
+  {
+    id: 'la-jamais-contente',
+    photoUrl: 'photos/la-jamais-contente.jpg',
+    year: 1899,
+    name: 'La Jamais Contente',
+    subtitle: 'The First Car to Break 100 km/h (62 mph)',
+    maker: 'Camille Jenatzy',
+    origin: 'Belgium 🇧🇪',
+    eraId: 'pioneers',
+    category: 'electric',
+    topSpeed: '105.88 km/h (65.79 mph)',
+    topSpeedKmh: 105.88,
+    power: '68 hp (50 kW)',
+    engine: 'Twin Postel-Vinay electric motors',
+    acceleration: 'World speed record holder (April 29, 1899)',
+    priceOriginal: 'Custom speed record prototype',
+    priceToday: 'Museum Artifact (Château de Compiègne)',
+    unitsBuilt: '1 prototype',
+    tagline: 'An electric torpedo on wheels that humiliated steam and petrol.',
+    description: 'Long before Tesla, the land speed record was owned by electricity. Belgian racing driver Camille Jenatzy piloted this torpedo-shaped, partinium-alloy bullet to become the first human on wheels to exceed 100 km/h.',
+    funFact: 'Jenatzy sat high above the aerodynamic shell, causing massive aerodynamic drag; had he ducked, the car likely would have gone 10 km/h faster!',
+    innovations: ['First vehicle over 100 km/h', 'First aerodynamic torpedo bodywork', 'Lightweight partinium aluminum-tungsten alloy body'],
+    soundProfile: 'electric-hum',
+    bodyType: 'Torpedo Land Speed Record',
+    colorTheme: '#a8a29e',
+    svgSilhouette: 'bullet-car'
+  },
+  {
+    id: 'mercedes-35hp',
+    photoUrl: 'photos/mercedes-35hp.jpg',
+    year: 1901,
+    name: 'Mercedes 35 HP',
+    subtitle: 'The Blueprint for Every Car That Followed',
+    maker: 'Daimler-Motoren-Gesellschaft (Wilhelm Maybach)',
+    origin: 'Germany 🇩🇪',
+    eraId: 'pioneers',
+    category: 'milestone',
+    topSpeed: '86 km/h (53 mph)',
+    topSpeedKmh: 86,
+    power: '35 hp @ 950 RPM',
+    engine: '5.9-liter Inline-4',
+    acceleration: 'Dominant 1901 Nice Race Week winner',
+    priceOriginal: 'Commissioned by Emil Jellinek',
+    priceToday: '$5,000,000+ (Historical value)',
+    unitsBuilt: 'approx. 36 units',
+    tagline: 'The end of the motorized carriage and the birth of modern automotive proportions.',
+    description: 'Commissioned by Austrian diplomat Emil Jellinek and engineered by Wilhelm Maybach, the 35 HP abandoned the high, horse-carriage architecture for a low center of gravity, pressed-steel frame, honeycomb radiator, and front-engine layout. Jellinek named it after his daughter, Mercédès.',
+    funFact: 'French Automobile Club president Paul Meyan declared after its racing debut: "We have entered the Mercedes era."',
+    innovations: ['First honeycomb radiator with fan cooling', 'Low-slung pressed steel chassis', 'Mechanically operated inlet valves', 'Rear wheel drum brakes'],
+    soundProfile: 'vintage-four',
+    bodyType: 'Open Tourer',
+    colorTheme: '#eab308',
+    svgSilhouette: 'early-racer'
+  },
+  {
+    id: 'ford-model-t',
+    photoUrl: 'photos/ford-model-t.jpg',
+    year: 1908,
+    name: 'Ford Model T',
+    subtitle: 'The "Tin Lizzie" That Put the World on Wheels',
+    maker: 'Henry Ford / Ford Motor Company',
+    origin: 'United States 🇺🇸',
+    eraId: 'pioneers',
+    category: 'everyday',
+    topSpeed: '72 km/h (45 mph)',
+    topSpeedKmh: 72,
+    power: '20 hp',
+    engine: '2.9-liter 177 cu in Inline-4',
+    acceleration: '0-40 km/h: approx. 12 seconds',
+    priceOriginal: '$850 in 1908 (dropped to $260 by 1925)',
+    priceToday: '$18,000 – $35,000 in collector market',
+    unitsBuilt: '15,007,033 units',
+    tagline: '“Any customer can have a car painted any colour that he wants so long as it is black.”',
+    description: 'The Model T wasn’t just a car—it was an industrial revolution. Henry Ford introduced the moving assembly line in 1913, reducing build time from 12 hours to 93 minutes, allowing him to double workers’ wages to $5/day while making car ownership affordable for everyday families.',
+    funFact: 'It ran on gasoline, kerosene, or ethanol, and its planetary gear transmission was controlled entirely with three foot pedals and a hand lever.',
+    innovations: ['The moving automotive assembly line (1913)', 'Vanadium steel alloy construction', 'Removable cylinder head design', 'Left-hand drive driver standardization'],
+    soundProfile: 'putt-putt',
+    bodyType: 'Touring / Runabout',
+    colorTheme: '#171717',
+    svgSilhouette: 'model-t'
+  },
+
+  // ERA 2: ART DECO & ROARING TWENTIES (1920 - 1939)
+  {
+    id: 'rumpler-tropfenwagen',
+    photoUrl: 'photos/rumpler-tropfenwagen.jpg',
+    year: 1921,
+    name: 'Rumpler Tropfenwagen',
+    subtitle: 'The Aerodynamic Teardrop Pioneer',
+    maker: 'Edmund Rumpler',
+    origin: 'Germany 🇩🇪',
+    eraId: 'artdeco',
+    category: 'milestone',
+    topSpeed: '105 km/h (65 mph)',
+    topSpeedKmh: 105,
+    power: '36 hp',
+    engine: '2.6-liter W6 (three banks of two cylinders)',
+    acceleration: 'Cruise comfortably at 90 km/h',
+    priceOriginal: '12,000 German Marks',
+    priceToday: 'Extremely rare museum collection piece',
+    unitsBuilt: 'approx. 100 units',
+    tagline: 'A coefficient of drag of 0.28 measured in wind tunnels—in 1921!',
+    description: 'Austrian aircraft designer Edmund Rumpler created a car shaped like a falling water droplet (the most aerodynamic natural shape). When tested in Volkswagen wind tunnels in 1979, its drag coefficient was measured at an astounding 0.28—better than many cars built in the 1990s!',
+    funFact: 'Director Fritz Lang featured numerous Tropfenwagens being destroyed in the fiery climax of his iconic 1927 sci-fi film "Metropolis".',
+    innovations: ['First streamlined teardrop automotive body', 'First curved safety glass windows', 'Rear mid-engine layout with swing axles'],
+    soundProfile: 'art-deco-straight8',
+    bodyType: 'Streamlined Limousine',
+    colorTheme: '#3b82f6',
+    svgSilhouette: 'teardrop'
+  },
+  {
+    id: 'bugatti-type-35',
+    photoUrl: 'photos/bugatti-type-35.jpg',
+    year: 1924,
+    name: 'Bugatti Type 35',
+    subtitle: 'The Most Victorious Racing Car in History',
+    maker: 'Ettore Bugatti',
+    origin: 'France 🇫🇷',
+    eraId: 'artdeco',
+    category: 'racing',
+    topSpeed: '190 km/h (118 mph)',
+    topSpeedKmh: 190,
+    power: '90 – 130 hp (supercharged Type 35B)',
+    engine: '2.0-liter / 2.3-liter SOHC Inline-8',
+    acceleration: 'Won over 1,000 races in its prime',
+    priceOriginal: 'approx. $5,000 USD in 1924',
+    priceToday: '$3,500,000 – $5,000,000',
+    unitsBuilt: 'approx. 340 units across variants',
+    tagline: 'Winner of 5 consecutive Targa Florio endurance races (1925–1929).',
+    description: 'Ettore Bugatti’s Type 35 was pure mechanical art. With its horseshoe radiator, eight-spoke cast aluminum alloy wheels with integrated brake drums, and roller-bearing crankshaft, it won an average of 14 races every single week during the late 1920s.',
+    funFact: 'Ettore Bugatti famously obsessed over aesthetics: engine blocks were hand-scraped and polished with decorative engine-turning (damascening).',
+    innovations: ['First cast aluminum alloy wheels', 'Brake drums cast directly into wheels for heat dissipation', 'Hollow front axle for unsprung weight reduction'],
+    soundProfile: 'supercharged-straight8',
+    bodyType: 'Grand Prix Racer',
+    colorTheme: '#1d4ed8',
+    svgSilhouette: 'gp-racer'
+  },
+  {
+    id: 'duesenberg-model-j',
+    photoUrl: 'photos/duesenberg-model-j.jpg',
+    year: 1928,
+    name: 'Duesenberg Model J',
+    subtitle: 'The Pinnacle of American Pre-War Opulence',
+    maker: 'Fred & August Duesenberg',
+    origin: 'United States 🇺🇸',
+    eraId: 'artdeco',
+    category: 'supercar',
+    topSpeed: '192 km/h (119 mph) / 225 km/h supercharged SJ',
+    topSpeedKmh: 192,
+    power: '265 hp (320 hp supercharged SJ)',
+    engine: '6.9-liter (420 cu in) DOHC 32-valve Straight-8',
+    acceleration: '0-96 km/h (60 mph): 8.0 seconds',
+    priceOriginal: '$8,500 bare chassis ($20,000+ with coachbuilt body)',
+    priceToday: '$3,000,000 – $22,000,000 (SSJ Roadster auction record)',
+    unitsBuilt: '481 chassis',
+    tagline: 'The origin of the phrase: "It’s a Doozy!"',
+    description: 'In an era where luxury cars rarely produced more than 100 horsepower, the Duesenberg Model J produced a staggering 265 hp (and 320 hp with the centrifugal supercharger). Owned by kings, mobsters, Clark Gable, and Greta Garbo, it could outrun police and race cars alike.',
+    funFact: 'Its straight-eight engine featured double overhead camshafts and four valves per cylinder—racing tech 50 years ahead of ordinary production cars.',
+    innovations: ['Four valves per cylinder in a luxury passenger car', 'Centrifugal supercharging on the SJ variant', 'Hydraulic brakes with selectable brake booster assist'],
+    soundProfile: 'art-deco-straight8',
+    bodyType: 'Coachbuilt Dual-Cowl Phaeton',
+    colorTheme: '#854d0e',
+    svgSilhouette: 'vintage-phaeton'
+  },
+  {
+    id: 'citroen-traction-avant',
+    photoUrl: 'photos/citroen-traction-avant.jpg',
+    year: 1934,
+    name: 'Citroën Traction Avant',
+    subtitle: 'The Front-Wheel Drive & Monocoque Revolution',
+    maker: 'André Citroën / André Lefèbvre',
+    origin: 'France 🇫🇷',
+    eraId: 'artdeco',
+    category: 'everyday',
+    topSpeed: '100 km/h (62 mph)',
+    topSpeedKmh: 100,
+    power: '32 – 77 hp (15CV Six)',
+    engine: '1.3L to 2.9L Inline-4 and Inline-6',
+    acceleration: 'Low-slung road holding that stunned Europe',
+    priceOriginal: '17,700 French Francs',
+    priceToday: '$25,000 – $65,000',
+    unitsBuilt: '759,111 units',
+    tagline: 'Three technologies that define 90% of modern cars: Front-Drive, Unibody, Torsion Bars.',
+    description: 'The Traction Avant (French for "Front-Wheel Drive") shattered existing conventions. By eliminating the heavy separate ladder chassis and propeller shaft, it sat dramatically lower to the ground, offered cavernous cabin space, and handled corners like it was on rails.',
+    funFact: 'Development costs were so astronomical that André Citroën went bankrupt and sold the company to Michelin just months after launch.',
+    innovations: ['Mass-production unitary body (monocoque)', 'Front-Wheel Drive layout', 'Independent front suspension with torsion bars', 'Hydraulic brakes on all four wheels'],
+    soundProfile: 'vintage-four',
+    bodyType: 'Executive Berline',
+    colorTheme: '#1e293b',
+    svgSilhouette: 'traction-avant'
+  },
+  {
+    id: 'bugatti-type-57sc-atlantic',
+    photoUrl: 'photos/bugatti-type-57sc-atlantic.jpg',
+    year: 1936,
+    name: 'Bugatti Type 57SC Atlantic',
+    subtitle: 'The Most Beautiful & Valuable Car Ever Built',
+    maker: 'Jean Bugatti',
+    origin: 'France 🇫🇷',
+    eraId: 'artdeco',
+    category: 'supercar',
+    topSpeed: '200 km/h (124 mph)',
+    topSpeedKmh: 200,
+    power: '200 hp @ 5,500 RPM',
+    engine: '3.3-liter Supercharged DOHC Inline-8',
+    acceleration: '0-96 km/h (60 mph): approx. 9.5 seconds',
+    priceOriginal: 'Custom ordered by Lord Victor Rothschild',
+    priceToday: 'Estimated $100,000,000+ (Ralph Lauren owns chassis 57591)',
+    unitsBuilt: 'Only 4 produced (3 survive; 1 lost to WWII)',
+    tagline: 'External riveted seams, kidney grille, magnesium alloy, and pure drama.',
+    description: 'Jean Bugatti’s Atlantic is considered automotive sculpture at its absolute zenith. The body panels were made of "Elektron"—an ultra-light magnesium-aluminum alloy so volatile it could catch fire if welded. Jean solution was riveting the halves together on prominent external dorsal seams.',
+    funFact: 'The fourth Atlantic, "La Voiture Noire" (Jean Bugatti’s personal chassis), was put on a train during the 1940 Nazi invasion of France and vanished without a trace. It remains the holy grail of lost treasures.',
+    innovations: ['Magnesium-aluminum alloy construction', 'Aerodynamic teardrop dorsal fin architecture', 'Supercharged twin-overhead camshaft inline-8'],
+    soundProfile: 'supercharged-straight8',
+    bodyType: 'Art Deco Aerolithe Coupe',
+    colorTheme: '#0284c7',
+    svgSilhouette: 'atlantic-coupe'
+  },
+  {
+    id: 'volkswagen-beetle',
+    photoUrl: 'photos/volkswagen-beetle.jpg',
+    year: 1938,
+    name: 'Volkswagen Beetle (Type 1)',
+    subtitle: 'The "Käfer" / "Bug" - 21.5 Million Built',
+    maker: 'Ferdinand Porsche / Volkswagen',
+    origin: 'Germany 🇩🇪',
+    eraId: 'artdeco',
+    category: 'everyday',
+    topSpeed: '100 km/h (62 mph)',
+    topSpeedKmh: 100,
+    power: '25 hp (increased to 50 hp in later years)',
+    engine: '985cc to 1600cc Air-cooled Flat-4 (Boxer)',
+    acceleration: '0-100 km/h: approx. 30 seconds',
+    priceOriginal: '990 Reichsmarks (~$390 in 1938)',
+    priceToday: '$15,000 – $50,000 depending on year/condition',
+    unitsBuilt: '21,529,464 units (1938–2003)',
+    tagline: 'The longest-running and most-manufactured single platform car in history.',
+    description: 'Designed as a reliable, affordable family car that could cruise on the Autobahn at 100 km/h without overheating, Ferdinand Porsche used a rear-mounted, air-cooled boxer engine and simple platform chassis. After WWII under British Major Ivan Hirst, the factory grew into a global cultural phenomenon.',
+    funFact: 'The Beetle’s air-cooled engine required no water or radiator, making it virtually immune to freezing winters in Alaska or boiling heat in the Sahara.',
+    innovations: ['Rear-mounted air-cooled flat-4 engine packaging', 'Torsion-bar suspension front and rear', 'Sealed floorpan so airtight early models floated on water'],
+    soundProfile: 'flat4-beetle',
+    bodyType: 'Compact 2-Door Sedan',
+    colorTheme: '#0284c7',
+    svgSilhouette: 'beetle'
+  },
+
+  // ERA 3: POST-WAR BOOM & TAILFINS (1940 - 1959)
+  {
+    id: 'land-rover-series-1',
+    photoUrl: 'photos/land-rover-series-1.jpg',
+    year: 1948,
+    name: 'Land Rover Series I',
+    subtitle: 'The Go-Anywhere Agricultural Hero',
+    maker: 'Maurice & Spencer Wilks / Rover',
+    origin: 'United Kingdom 🇬🇧',
+    eraId: 'postwar',
+    category: 'everyday',
+    topSpeed: '72 km/h (45 mph)',
+    topSpeedKmh: 72,
+    power: '50 hp',
+    engine: '1.6-liter Inline-4',
+    acceleration: 'Built for mud, ruts, and farm plowing',
+    priceOriginal: '£450 in 1948',
+    priceToday: '$40,000 – $90,000',
+    unitsBuilt: '211,000 Series I units',
+    tagline: 'Drawn in the sands of Red Wharf Bay, Anglesey in 1947.',
+    description: 'With steel rationed in post-war Britain, brothers Maurice and Spencer Wilks built a rugged utility vehicle using surplus aircraft cockpit aluminum (Birmabright) and cockpit green paint. It launched four-wheel drive exploration across Africa, Australia, and the Arctic.',
+    funFact: 'For roughly 60% of the developing world’s population in the 1950s and 60s, the first motor vehicle they ever saw was a Land Rover.',
+    innovations: ['Permanent 4WD transfer box with freewheel mechanism', 'Corrosion-proof aluminum-magnesium alloy bodywork', 'Power take-off (PTO) to run farm machinery and saws'],
+    soundProfile: 'vintage-four',
+    bodyType: 'Utility 4x4',
+    colorTheme: '#4d7c0f',
+    svgSilhouette: 'series-rover'
+  },
+  {
+    id: 'porsche-356',
+    photoUrl: 'photos/porsche-356.jpg',
+    year: 1948,
+    name: 'Porsche 356 "No. 1" Roadster',
+    subtitle: 'The Genesis of the Porsche Dynasty',
+    maker: 'Ferry Porsche',
+    origin: 'Germany 🇩🇪 / Austria 🇦🇹',
+    eraId: 'postwar',
+    category: 'supercar',
+    topSpeed: '135 km/h (84 mph)',
+    topSpeedKmh: 135,
+    power: '35 hp @ 4,000 RPM (later 40–130 hp Carrera)',
+    engine: '1.1-liter Air-Cooled Flat-4',
+    acceleration: '0-100 km/h: approx. 14 seconds',
+    priceOriginal: 'Built in Gmünd, Austria sawmill',
+    priceToday: 'Porsche Museum Stuttgart treasure',
+    unitsBuilt: 'approx. 76,000 total 356 models',
+    tagline: '“In the beginning, I looked around and could not find the car I’d been dreaming of: a small, lightweight sports car that uses energy efficiently. So I decided to build it myself.”',
+    description: 'Ferry Porsche handcrafted the first Porsche prototype in an Austrian sawmill using tuned Beetle running gear encased in a stunning aerodynamic aluminum roadster body. Its exceptional balance, low weight (585 kg), and rear-engine traction became the DNA of the Porsche brand.',
+    funFact: 'Proto No. 1 was mid-engined; for production, Ferry moved the engine behind the rear axle to allow a 2+2 seating configuration and more luggage space.',
+    innovations: ['Lightweight aerodynamic aluminum coupe/roadster body', 'High-compression air-cooled boxer engine', 'Porsche synchromesh gearbox rings'],
+    soundProfile: 'flat4-beetle',
+    bodyType: 'Speedster / Coupe',
+    colorTheme: '#e2e8f0',
+    svgSilhouette: 'porsche-356'
+  },
+  {
+    id: 'mercedes-300-sl-gullwing',
+    photoUrl: 'photos/mercedes-300-sl-gullwing.jpg',
+    year: 1954,
+    name: 'Mercedes-Benz 300 SL "Gullwing"',
+    subtitle: 'Direct Fuel Injection & Iconic Upward-Swinging Doors',
+    maker: 'Rudolf Uhlenhaut / Mercedes-Benz',
+    origin: 'Germany 🇩🇪',
+    eraId: 'postwar',
+    category: 'supercar',
+    topSpeed: '260 km/h (161 mph)',
+    topSpeedKmh: 260,
+    power: '215 hp @ 5,800 RPM',
+    engine: '3.0-liter M198 SOHC Inline-6',
+    acceleration: '0-100 km/h (62 mph): 7.2 seconds',
+    priceOriginal: '$6,820 in 1954 (~$75,000 today)',
+    priceToday: '$1,500,000 – $6,800,000 (Alloy body)',
+    unitsBuilt: '1,400 Gullwing Coupes / 1,858 Roadsters',
+    tagline: 'The fastest production car of its era and the world’s first true supercar.',
+    description: 'Born from the 1952 Le Mans-winning race car, the 300 SL used an intricate tubular spaceframe chassis. Because the high frame tubes ran along the sills, normal doors couldn’t open—so Mercedes pivoted them from the roof, inventing the legendary "Gullwing" doors.',
+    funFact: 'It was the very first four-stroke production car in automotive history fitted with direct mechanical fuel injection (derived from Messerschmitt fighter aircraft).',
+    innovations: ['First production mechanical direct fuel injection', 'Tubular spaceframe chassis weighing only 82 kg', 'Dry sump lubrication allowing engine to be tilted at 50 degrees'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Gullwing Coupe',
+    colorTheme: '#cbd5e1',
+    svgSilhouette: 'gullwing'
+  },
+  {
+    id: 'citroen-ds-19',
+    photoUrl: 'photos/citroen-ds-19.jpg',
+    year: 1955,
+    name: 'Citroën DS 19',
+    subtitle: 'The "Goddess" (Déesse) From Outer Space',
+    maker: 'Flaminio Bertoni & Paul Magès',
+    origin: 'France 🇫🇷',
+    eraId: 'postwar',
+    category: 'milestone',
+    topSpeed: '140 km/h (87 mph)',
+    topSpeedKmh: 140,
+    power: '75 hp',
+    engine: '1.9-liter Inline-4',
+    acceleration: 'Rode like a flying magic carpet',
+    priceOriginal: '930,000 French Francs',
+    priceToday: '$30,000 – $90,000',
+    unitsBuilt: '1,455,746 units',
+    tagline: '12,000 orders placed in the first 24 hours at the 1955 Paris Motor Show.',
+    description: 'When the sheet was pulled off the DS at the Grand Palais, observers felt like aliens had landed. It featured self-leveling hydropneumatic suspension (which let the car drive on three wheels), powered disc brakes, fiberglass roof, single-spoke steering wheel, and directional headlights that turned with corners.',
+    funFact: 'In 1962, French President Charles de Gaulle survived an assassination attempt when gunmen riddled his DS with 140 bullets; the hydropneumatic suspension kept the car stable at high speed even with shredded flat tires.',
+    innovations: ['Hydropneumatic self-leveling suspension', 'First European production car with front disc brakes', 'Directional headlights linked to steering gear', 'Plastic/fiberglass lightweight roof panel'],
+    soundProfile: 'vintage-four',
+    bodyType: 'Futuristic Fastback',
+    colorTheme: '#155e75',
+    svgSilhouette: 'citroen-ds'
+  },
+  {
+    id: 'chevrolet-bel-air-57',
+    photoUrl: 'photos/chevrolet-bel-air-57.jpg',
+    year: 1957,
+    name: 'Chevrolet Bel Air \'57',
+    subtitle: 'The Crown Jewel of Chrome, Fins & Rock \'n\' Roll',
+    maker: 'Harley Earl / Chevrolet',
+    origin: 'United States 🇺🇸',
+    eraId: 'postwar',
+    category: 'everyday',
+    topSpeed: '180 km/h (112 mph)',
+    topSpeedKmh: 180,
+    power: '283 hp (Fuelie V8: 1 hp per cubic inch!)',
+    engine: '283 cu in (4.6-liter) "Super Turbo-Fire" V8',
+    acceleration: '0-96 km/h: 8.2 seconds',
+    priceOriginal: '$2,238 – $2,465 in 1957',
+    priceToday: '$45,000 – $150,000',
+    unitsBuilt: 'Over 700,000 1957 Bel Airs',
+    tagline: 'Sweet, smooth, and sassy—the quintessential American 1950s cultural icon.',
+    description: 'With its gold anodized grille, rocket hood ornaments, swept-wing tailfins, and two-tone paint, the ’57 Chevy encapsulated post-war American optimism. The optional Rochester mechanical fuel-injected 283 V8 reached the magical benchmark of one horsepower per cubic inch.',
+    funFact: 'The fuel door was cleverly hidden behind the chrome trim of the left rear tailfin so it didn’t disrupt the car’s horizontal bodylines.',
+    innovations: ['Rochester mechanical continuous fuel injection', 'Hidden rear tailfin fuel filler cap', '12-volt electrical system and electric wipers'],
+    soundProfile: 'v8-muscle',
+    bodyType: '2-Door Hardtop / Convertible',
+    colorTheme: '#06b6d4',
+    svgSilhouette: 'chevy-57'
+  },
+  {
+    id: 'mini-cooper-1959',
+    photoUrl: 'photos/mini-cooper-1959.jpg',
+    year: 1959,
+    name: 'Austin Seven / Morris Mini-Minor',
+    subtitle: 'The Packaging Miracle of Alec Issigonis',
+    maker: 'Sir Alec Issigonis / BMC',
+    origin: 'United Kingdom 🇬🇧',
+    eraId: 'postwar',
+    category: 'everyday',
+    topSpeed: '116 km/h (72 mph) / 160 km/h Cooper S',
+    topSpeedKmh: 116,
+    power: '34 hp (75 hp in Monte Carlo Rally Cooper S)',
+    engine: '848cc A-series Inline-4 transverse',
+    acceleration: 'Go-kart handling that dominated rallying',
+    priceOriginal: '£496 including tax in 1959',
+    priceToday: '$20,000 – $75,000 (Monte Carlo spec)',
+    unitsBuilt: '5,387,862 units (1959–2000)',
+    tagline: '80% of its footprint dedicated entirely to passenger and luggage space.',
+    description: 'Triggered by the 1956 Suez Fuel Crisis, Sir Alec Issigonis turned the engine sideways (transverse), placed the gearbox inside the oil sump beneath the engine, used tiny 10-inch wheels pushed out to the far corners, and rubber cone suspension. It became the template for virtually every front-wheel-drive hatchback on the planet.',
+    funFact: 'Despite its tiny size, John Cooper tuned it to win the legendary Monte Carlo Rally three times (1964, 1965, and 1967) against massive V8 competitors.',
+    innovations: ['Transverse engine with integrated sump gearbox', 'Rubber cone compact suspension system', 'External body welded seams to maximize interior hip room'],
+    soundProfile: 'vintage-four',
+    bodyType: '2-Door Subcompact Saloon',
+    colorTheme: '#dc2626',
+    svgSilhouette: 'classic-mini'
+  },
+  {
+    id: 'volvo-seatbelt-milestone',
+    photoUrl: 'photos/volvo-seatbelt-milestone.jpg',
+    year: 1959,
+    name: 'Volvo 3-Point Seatbelt (Nils Bohlin)',
+    subtitle: 'The Free Patent That Saved Over 1,000,000 Lives',
+    maker: 'Nils Bohlin / Volvo',
+    origin: 'Sweden 🇸🇪',
+    eraId: 'postwar',
+    category: 'milestone',
+    topSpeed: 'First fitted to Volvo PV544',
+    topSpeedKmh: 120,
+    power: 'Life-saving safety architecture',
+    engine: 'Standard Volvo B16 Inline-4',
+    acceleration: 'Reduces fatality risk in crashes by >50%',
+    priceOriginal: 'Fitted standard in 1959',
+    priceToday: 'Universal safety requirement worldwide',
+    unitsBuilt: 'Equipped on billions of vehicles globally',
+    tagline: 'Volvo opened the patent for free to all automakers for the sake of public safety.',
+    description: 'Aviation engineer Nils Bohlin designed the V-shaped three-point lap-and-diagonal safety belt to secure both upper and lower torso with a buckle at the hip. Volvo made the patent openly available to all competing manufacturers without royalties—a humanitarian decision that has saved over one million lives.',
+    funFact: 'Germany’s Patent Office listed the 3-point seatbelt as one of the eight most significant patents to benefit mankind between 1877 and 1977.',
+    innovations: ['Three-point occupant restraint geometry', 'One-handed single buckle operation', 'Unpatented open humanitarian release'],
+    soundProfile: 'click-buckle',
+    bodyType: 'Safety Milestone',
+    colorTheme: '#0284c7',
+    svgSilhouette: 'safety-shield'
+  },
+
+  // ERA 4: THE GOLDEN AGE: MUSCLE, LE MANS & SUPERCARS (1960 - 1969)
+  {
+    id: 'jaguar-e-type',
+    photoUrl: 'photos/jaguar-e-type.jpg',
+    year: 1961,
+    name: 'Jaguar E-Type (XKE)',
+    subtitle: 'Enzo Ferrari: "The Most Beautiful Car Ever Made"',
+    maker: 'Malcolm Sayer & Sir William Lyons / Jaguar',
+    origin: 'United Kingdom 🇬🇧',
+    eraId: 'golden',
+    category: 'supercar',
+    topSpeed: '241 km/h (150 mph)',
+    topSpeedKmh: 241,
+    power: '265 hp @ 5,500 RPM',
+    engine: '3.8-liter DOHC Straight-6 (triple SU carburetors)',
+    acceleration: '0-96 km/h: 6.7 seconds',
+    priceOriginal: '£2,097 ($5,600 USD) in 1961',
+    priceToday: '$120,000 – $400,000',
+    unitsBuilt: '72,584 units across 3 series',
+    tagline: 'Supercar performance and drop-dead gorgeous looks at half the price of a Ferrari.',
+    description: 'Penned by aeronautical aerodynamicist Malcolm Sayer, the E-Type featured a monocoque passenger tub, tubular front engine subframe, four-wheel independent coil suspension with inboard rear disc brakes, and a jaw-dropping forward-tilting clamshell hood.',
+    funFact: 'Jaguar PR manager Bob Berry drove the prototype flat-out through the night from Coventry, England to the Geneva Motor Show in Switzerland, arriving 20 minutes before the curtain went up.',
+    innovations: ['Inboard rear disc brakes to reduce unsprung weight', 'Aeronautically calculated aerodynamic body curves', 'Front subframe bolted to central monocoque tub'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Fixed Head Coupe / Roadster',
+    colorTheme: '#15803d',
+    svgSilhouette: 'e-type'
+  },
+  {
+    id: 'ferrari-250-gto',
+    photoUrl: 'photos/ferrari-250-gto.jpg',
+    year: 1962,
+    name: 'Ferrari 250 GTO',
+    subtitle: 'The Holy Grail of Automotive Collecting',
+    maker: 'Giotto Bizzarrini & Sergio Scaglietti / Ferrari',
+    origin: 'Italy 🇮🇹',
+    eraId: 'golden',
+    category: 'supercar',
+    topSpeed: '280 km/h (174 mph)',
+    topSpeedKmh: 280,
+    power: '300 hp @ 7,500 RPM',
+    engine: '3.0-liter Colombo Tipo 168/62 V12',
+    acceleration: '0-96 km/h: 5.4 seconds',
+    priceOriginal: '$18,000 in 1962 (required Enzo’s personal approval)',
+    priceToday: '$48,400,000 – $70,000,000 (World record auction car)',
+    unitsBuilt: '36 units (1962–1964)',
+    tagline: 'Gran Turismo Omologato: Built to dominate the World Sportscar Championship.',
+    description: 'The 250 GTO was the pinnacle of front-engine V12 racing. Hand-hammered over wooden bucks by Scaglietti with wind-tunnel sculpted nose and ducktail rear spoiler, it took three consecutive GT World Championships. Every single one of the 36 built survives to this day.',
+    funFact: 'Enzo Ferrari dodged FIA rules requiring 100 road cars for homologation by numbering the chassis non-consecutively and shuffling cars between garages during inspections!',
+    innovations: ['Kamm tail aerodynamic downforce treatment', 'Dry-sump 300 hp Colombo V12 engine', 'Five-speed gated synchromesh dog-leg gearbox'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Homologation Berlinetta',
+    colorTheme: '#dc2626',
+    svgSilhouette: 'ferrari-gto'
+  },
+  {
+    id: 'porsche-911-1964',
+    photoUrl: 'photos/porsche-911-1964.jpg',
+    year: 1964,
+    name: 'Porsche 911 (Classic 901)',
+    subtitle: 'The Rear-Engine Flyline That Refuses to Age',
+    maker: 'Ferdinand "Butzi" Porsche',
+    origin: 'Germany 🇩🇪',
+    eraId: 'golden',
+    category: 'supercar',
+    topSpeed: '210 km/h (130 mph)',
+    topSpeedKmh: 210,
+    power: '130 hp @ 6,100 RPM',
+    engine: '2.0-liter Air-Cooled Flat-6',
+    acceleration: '0-100 km/h: 8.5 seconds',
+    priceOriginal: '21,900 Deutsche Marks in 1964',
+    priceToday: '$150,000 – $400,000 (Early short-wheelbase 911)',
+    unitsBuilt: 'Over 1,200,000 911s built over 60+ continuous years',
+    tagline: 'Originally dubbed the 901 until Peugeot claimed exclusive rights to three-digit numbers with a zero in the middle.',
+    description: 'The 911 combined everyday practicality with competition-grade sports car handling. Mounted behind the rear wheels was a dry-sump, air-cooled boxer flat-six that sang up to redline. While other sports car layouts came and went, the 911’s silhouette has remained in continuous production for over six decades.',
+    funFact: 'The ignition key is placed to the left of the steering wheel—a tradition from Le Mans where drivers could start the engine with their left hand while shifting into first gear with their right as they leaped into the car.',
+    innovations: ['Rear-mounted air-cooled boxer flat-6 architecture', 'Torsion-bar MacPherson front suspension', 'Iconic 5-dial ergonomic dashboard layout'],
+    soundProfile: 'flat6-screamer',
+    bodyType: '2+2 Sports Coupe',
+    colorTheme: '#ea580c',
+    svgSilhouette: 'porsche-911'
+  },
+  {
+    id: 'ford-mustang-1964',
+    photoUrl: 'photos/ford-mustang-1964.jpg',
+    year: 1964,
+    name: 'Ford Mustang 1964½',
+    subtitle: 'The Birth of the "Pony Car" & Youth Rebellion',
+    maker: 'Lee Iacocca & Gale Halderman / Ford',
+    origin: 'United States 🇺🇸',
+    eraId: 'golden',
+    category: 'everyday',
+    topSpeed: '190 km/h (118 mph with 289 V8)',
+    topSpeedKmh: 190,
+    power: '101 hp (Inline-6) to 271 hp (289 Hi-Po V8)',
+    engine: '170 cu in I6 or 289 cu in (4.7L) Windsor V8',
+    acceleration: '0-96 km/h: 7.5 seconds (289 V8)',
+    priceOriginal: '$2,368 base price in April 1964',
+    priceToday: '$30,000 – $150,000 (K-code/Shelby GT350)',
+    unitsBuilt: 'Over 1,000,000 units sold in the first 18 months',
+    tagline: 'Long hood, short deck—the car that defined the American Baby Boom.',
+    description: 'Ford executive Lee Iacocca championed an affordable, customizable sporty coupe aimed at the young post-war generation. Unveiled at the 1964 New York World’s Fair, 22,000 orders were placed on the very first day, creating a buying frenzy never seen before in Detroit.',
+    funFact: 'One buyer in Chicago was so terrified someone else would buy his Mustang that he slept inside the car at the dealership until his check cleared the next morning!',
+    innovations: ['Creation of the "Pony Car" market segment', 'Massive modular option list letting buyers tailor economy or muscle', 'Pioneering use of product placement in James Bond’s Goldfinger'],
+    soundProfile: 'v8-muscle',
+    bodyType: 'Notchback / Fastback Coupe',
+    colorTheme: '#1e3a8a',
+    svgSilhouette: 'mustang-64'
+  },
+  {
+    id: 'lamborghini-miura',
+    photoUrl: 'photos/lamborghini-miura.jpg',
+    year: 1966,
+    name: 'Lamborghini Miura P400',
+    subtitle: 'The World’s First Mid-Engine V12 Supercar',
+    maker: 'Marcello Gandini (Bertone), Gian Paolo Dallara',
+    origin: 'Italy 🇮🇹',
+    eraId: 'golden',
+    category: 'supercar',
+    topSpeed: '280 km/h (174 mph)',
+    topSpeedKmh: 280,
+    power: '350 hp @ 7,000 RPM',
+    engine: '3.9-liter 60° V12 mounted transversely',
+    acceleration: '0-96 km/h: 6.2 seconds',
+    priceOriginal: '$20,000 in 1966',
+    priceToday: '$1,800,000 – $4,500,000 (Miura SV)',
+    unitsBuilt: '764 units (1966–1973)',
+    tagline: 'The car that coined the term "Supercar".',
+    description: 'Tractor magnate Ferruccio Lamborghini wanted to beat Enzo Ferrari at his own game. His young engineers secretly developed a rolling chassis with a 4.0-liter V12 squeezed sideways behind the seats. Wrapped in 25-year-old Marcello Gandini’s sensuous body with "eyelash" headlights, it stunned the 1966 Geneva Show.',
+    funFact: 'At high speeds above 250 km/h, air trapped beneath the front nose caused aerodynamic front-end lift, causing drivers to claim the steering felt lighter than air!',
+    innovations: ['First transverse rear-mid-engine V12 layout', 'Integrated gearbox sharing the engine oil sump', 'Full forward and rear clamshell body openings'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Mid-Engine Berlinetta',
+    colorTheme: '#f59e0b',
+    svgSilhouette: 'miura'
+  },
+  {
+    id: 'ford-gt40-mk2',
+    photoUrl: 'photos/ford-gt40-mk2.jpg',
+    year: 1966,
+    name: 'Ford GT40 Mk II',
+    subtitle: 'The 1-2-3 Le Mans Finish That Humiliated Ferrari',
+    maker: 'Carroll Shelby, Ken Miles, Ford Advanced Vehicles',
+    origin: 'United States 🇺🇸 / UK 🇬🇧',
+    eraId: 'golden',
+    category: 'racing',
+    topSpeed: '330 km/h (205 mph) down Mulsanne Straight',
+    topSpeedKmh: 330,
+    power: '485 hp @ 6,200 RPM',
+    engine: '7.0-liter (427 cu in) FE NASCAR V8',
+    acceleration: '0-96 km/h: 3.8 seconds',
+    priceOriginal: 'Built to settle Henry Ford II’s personal grudge',
+    priceToday: '$9,000,000 – $15,000,000 (Historic chassis)',
+    unitsBuilt: 'approx. 105 GT40s across Marks I-IV',
+    tagline: 'Only 40 inches high—engineered specifically to break Ferrari’s 6-year Le Mans streak.',
+    description: 'After Enzo Ferrari backed out of selling his company to Ford in 1963, Henry Ford II vowed revenge. Carroll Shelby and test driver Ken Miles shoved a thunderous 7.0-liter NASCAR V8 into the mid-engine GT40 chassis. In 1966, Ford staged an iconic 1-2-3 formation finish at Le Mans, repeating victories in 67, 68, and 69.',
+    funFact: 'To combat glowing red brake rotors cracking under 200 mph stops at Le Mans, Shelby’s team invented quick-change brake calipers and rotors that could be swapped in under a minute during pit stops.',
+    innovations: ['Quick-change racing brake rotor assembly', 'Computer-modeled aerodynamics for high-speed Mulsanne stability', 'NASCAR big-block endurance durability adaptations'],
+    soundProfile: 'v8-muscle',
+    bodyType: 'Le Mans Prototype',
+    colorTheme: '#1e40af',
+    svgSilhouette: 'gt40'
+  },
+  {
+    id: 'dodge-charger-daytona',
+    photoUrl: 'photos/dodge-charger-daytona.jpg',
+    year: 1969,
+    name: 'Dodge Charger Daytona',
+    subtitle: 'The 200-mph Aero Warrior Banned by NASCAR',
+    maker: 'Chrysler Creative Studio & John Pointer',
+    origin: 'United States 🇺🇸',
+    eraId: 'golden',
+    category: 'supercar',
+    topSpeed: '322 km/h (200.4 mph on closed circuit)',
+    topSpeedKmh: 322,
+    power: '425 hp (426 Street HEMI)',
+    engine: '7.0-liter (426 cu in) 2x4bbl HEMI V8',
+    acceleration: '0-96 km/h: 5.2 seconds',
+    priceOriginal: '$3,993 in 1969',
+    priceToday: '$500,000 – $1,400,000 (Original 4-speed 426 Hemi)',
+    unitsBuilt: '503 units (exact homologation requirement)',
+    tagline: 'A 23-inch steel rear stabilizer wing and an 18-inch aerodynamic nose cone.',
+    description: 'To dominate NASCAR super-speedways, Dodge engineers recruited rocket scientists from Chrysler’s missile division. They grafted an aerodynamic nosecone to pierce the air and a towering rear wing tall enough so trunk lids could still swing open. In March 1970, Buddy Baker drove it to become the first NASCAR car to officially exceed 200 mph.',
+    funFact: 'NASCAR president Bill France Sr. was so alarmed by the terrifying speeds that he effectively outlawed aero cars for the 1971 season by restricting their engine displacement to 305 cu in.',
+    innovations: ['First NASCAR stock car with wind-tunnel calculated aero downforce', 'First stock car to officially break 200 mph on a closed circuit', 'Front fender backwards-facing pressure relief scoops'],
+    soundProfile: 'v8-muscle',
+    bodyType: 'Winged Muscle Coupe',
+    colorTheme: '#9333ea',
+    svgSilhouette: 'charger-daytona'
+  },
+
+  // ERA 5: THE WEDGE & TURBO REVOLUTION (1970 - 1989)
+  {
+    id: 'range-rover-classic',
+    photoUrl: 'photos/range-rover-classic.jpg',
+    year: 1970,
+    name: 'Range Rover Classic',
+    subtitle: 'The Father of Modern Luxury 4x4 SUVs',
+    maker: 'Charles Spencer King / Rover',
+    origin: 'United Kingdom 🇬🇧',
+    eraId: 'wedge',
+    category: 'everyday',
+    topSpeed: '153 km/h (95 mph)',
+    topSpeedKmh: 153,
+    power: '135 hp',
+    engine: '3.5-liter Rover Aluminum V8',
+    acceleration: '0-100 km/h: 15.0 seconds',
+    priceOriginal: '£1,998 in 1970',
+    priceToday: '$30,000 – $100,000',
+    unitsBuilt: '317,615 units over 26 years',
+    tagline: 'The first vehicle ever exhibited in the Louvre Museum in Paris as an exemplary work of industrial design.',
+    description: 'Before the Range Rover, four-wheel drive vehicles were noisy, bone-shaking farm implements. Spen King engineered coil-spring suspension, permanent four-wheel drive, dual-circuit disc brakes on all four wheels, and a smooth aluminum V8 into a handsome, split-tailgate package.',
+    funFact: 'Early prototypes were badged "Velar" (from the Italian velare, meaning to veil or hide) so motoring journalists wouldn’t discover Rover was building an upscale 4x4.',
+    innovations: ['All-coil spring luxury long-travel suspension', 'Permanent 4WD with lockable center differential', 'First 4x4 with 4-wheel power disc brakes'],
+    soundProfile: 'v8-muscle',
+    bodyType: 'Luxury 4x4 Estate',
+    colorTheme: '#166534',
+    svgSilhouette: 'range-rover'
+  },
+  {
+    id: 'lamborghini-countach',
+    photoUrl: 'photos/lamborghini-countach.jpg',
+    year: 1974,
+    name: 'Lamborghini Countach LP400',
+    subtitle: 'Marcello Gandini’s Origami Wedge & Scissor Doors',
+    maker: 'Marcello Gandini (Bertone) / Paolo Stanzani',
+    origin: 'Italy 🇮🇹',
+    eraId: 'wedge',
+    category: 'supercar',
+    topSpeed: '300 km/h (186 mph)',
+    topSpeedKmh: 300,
+    power: '375 hp @ 8,000 RPM',
+    engine: '3.9-liter Longitudinal V12',
+    acceleration: '0-100 km/h: 5.4 seconds',
+    priceOriginal: '$52,000 in 1974',
+    priceToday: '$900,000 – $1,800,000 (Periscopio LP400)',
+    unitsBuilt: '158 LP400 "Periscopio" / 1,983 total across variants',
+    tagline: 'When design head Nuccio Bertone first saw the prototype, he shouted "Countach!"—a Piedmontese exclamation of stunned disbelief.',
+    description: 'The Countach replaced the organic curves of the 1960s with razor-sharp geometric planes and upward-pivoting scissor doors. The longitudinal V12 pointed backwards, with the five-speed gearbox positioned between the driver and passenger for optimal weight balance.',
+    funFact: 'Rear visibility was so non-existent that drivers had to sit on the wide doorsill with the scissor door open and look backwards over the roof while clutching into reverse!',
+    innovations: ['First automotive implementation of upward-opening scissor doors', 'Longitudinal mid-engine with forward gearbox output', 'Periscope roof rear-view mirror tunnel on early LP400s'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Wedge Supercar',
+    colorTheme: '#eab308',
+    svgSilhouette: 'countach'
+  },
+  {
+    id: 'vw-golf-gti-mk1',
+    photoUrl: 'photos/vw-golf-gti-mk1.jpg',
+    year: 1975,
+    name: 'Volkswagen Golf GTI Mk1',
+    subtitle: 'The Original "Hot Hatch" Pocket Rocket',
+    maker: 'Anton Konrad, Alfons Löwenberg, Giorgetto Giugiaro',
+    origin: 'Germany 🇩🇪',
+    eraId: 'wedge',
+    category: 'everyday',
+    topSpeed: '182 km/h (113 mph)',
+    topSpeedKmh: 182,
+    power: '110 hp @ 6,100 RPM',
+    engine: '1.6-liter Bosch K-Jetronic Fuel-Injected I4',
+    acceleration: '0-100 km/h: 9.0 seconds',
+    priceOriginal: '13,850 Deutsche Marks in 1976',
+    priceToday: '$25,000 – $55,000',
+    unitsBuilt: '462,000 Mk1 GTIs (VW originally planned to build only 5,000!)',
+    tagline: 'Red grille surround, golf-ball gearknob, tartan seats, and giant-killing agility.',
+    description: 'Developed in secret after hours by passionate VW engineers, the GTI injected high-performance fuel injection into the sensible Giorgetto Giugiaro-designed front-wheel drive Golf hatchback. Weighing only 810 kg, it could out-accelerate heavy sports sedans costing three times as much.',
+    funFact: 'Marketing executives feared the GTI would ruin Volkswagen’s sensible image, agreeing to approve it only on the condition that build quantities be capped at 5,000 units.',
+    innovations: ['Created the modern "Hot Hatchback" performance category', 'Bosch K-Jetronic mechanical fuel injection on an affordable car', 'Iconic golf-ball dimpled gearshift knob and Clark tartan upholstery'],
+    soundProfile: 'vintage-four',
+    bodyType: '3-Door Hot Hatchback',
+    colorTheme: '#b91c1c',
+    svgSilhouette: 'golf-gti'
+  },
+  {
+    id: 'delorean-dmc-12',
+    photoUrl: 'photos/delorean-dmc-12.jpg',
+    year: 1981,
+    name: 'DeLorean DMC-12',
+    subtitle: 'Brushed Stainless Steel & Back to the Future Icon',
+    maker: 'John DeLorean / Giorgetto Giugiaro / Lotus',
+    origin: 'Northern Ireland 🇬🇧 / USA 🇺🇸',
+    eraId: 'wedge',
+    category: 'milestone',
+    topSpeed: '177 km/h (110 mph)',
+    topSpeedKmh: 177,
+    power: '130 hp',
+    engine: '2.85-liter PRV (Peugeot-Renault-Volvo) V6',
+    acceleration: '0-96 km/h: 9.5 seconds (or 88 mph into 1955!)',
+    priceOriginal: '$25,000 in 1981',
+    priceToday: '$50,000 – $120,000',
+    unitsBuilt: 'approx. 9,000 units (1981–1983)',
+    tagline: '“If you’re gonna build a time machine into a car, why not do it with some style?”',
+    description: 'Maverick GM executive John DeLorean set out to build an "ethical sports car" with a rust-free brushed SS304 stainless steel skin and counterbalanced gullwing doors. While plagued by corporate troubles, its starring role as Doc Brown’s time machine cemented its immortality in pop culture.',
+    funFact: 'The stainless steel bodywork cannot be painted normally; scratches are repaired using an ordinary household Scotch-Brite abrasive pad rubbed along the grain!',
+    innovations: ['Unpainted brushed 304 stainless steel outer skin', 'Cryogenically treated torsion bar gullwing door springs', 'Lotus-engineered fiberglass and vacuum-molded double-Y chassis'],
+    soundProfile: 'vintage-four',
+    bodyType: 'Stainless Steel Gullwing',
+    colorTheme: '#94a3b8',
+    svgSilhouette: 'delorean'
+  },
+  {
+    id: 'audi-sport-quattro',
+    photoUrl: 'photos/audi-sport-quattro.jpg',
+    year: 1984,
+    name: 'Audi Sport Quattro S1',
+    subtitle: 'The AWD Turbo Monster That Broke World Rallying',
+    maker: 'Ferdinand Piëch & Jörg Bensinger / Audi',
+    origin: 'Germany 🇩🇪',
+    eraId: 'wedge',
+    category: 'racing',
+    topSpeed: '250 km/h (155 mph) / 300+ km/h Pikes Peak',
+    topSpeedKmh: 250,
+    power: '306 hp (road) / 500 – 600 hp (Group B rally spec)',
+    engine: '2.1-liter Turbocharged DOHC 20V Inline-5',
+    acceleration: '0-100 km/h: 4.8 seconds (road) / < 3.0s (gravel rally)',
+    priceOriginal: '203,850 Deutsche Marks (cost more than a Porsche 911 Turbo)',
+    priceToday: '$500,000 – $1,200,000',
+    unitsBuilt: '214 homologation units',
+    tagline: 'The warbling 5-cylinder turbo and permanent all-wheel drive that rewrote motorsport physics.',
+    description: 'Ferdinand Piëch proved that four driven wheels were vastly superior to two. To make the car nimbler on tight rally stages, Audi chopped 32 centimeters out of the wheelbase and fashioned body panels from Kevlar and carbon fiber. The Sport Quattro ushered in the wild, fire-spitting Group B rally era.',
+    funFact: 'French rally legend Michèle Mouton drove an Audi Quattro to become the first and only woman to win a round of the FIA World Rally Championship.',
+    innovations: ['Permanent automotive Quattro AWD system with Torsen center diff', 'Carbon-Kevlar composite bodywork construction', 'Legendary uneven-firing 20V turbocharged inline-5'],
+    soundProfile: 'turbo-inline5',
+    bodyType: 'Homologation Short-Wheelbase Rally Coupe',
+    colorTheme: '#f8fafc',
+    svgSilhouette: 'audi-quattro'
+  },
+  {
+    id: 'porsche-959',
+    photoUrl: 'photos/porsche-959.jpg',
+    year: 1986,
+    name: 'Porsche 959',
+    subtitle: 'The Technological Spaceship From the Future',
+    maker: 'Helmuth Bott / Porsche',
+    origin: 'Germany 🇩🇪',
+    eraId: 'wedge',
+    category: 'supercar',
+    topSpeed: '317 km/h (197 mph) / 339 km/h (959 S)',
+    topSpeedKmh: 317,
+    power: '450 hp @ 6,500 RPM',
+    engine: '2.85-liter Sequential Twin-Turbo Flat-6 (water-cooled heads)',
+    acceleration: '0-100 km/h: 3.6 seconds',
+    priceOriginal: '$225,000 in 1986 (Porsche lost money on every one built)',
+    priceToday: '$1,800,000 – $3,000,000',
+    unitsBuilt: '337 units (1986–1989)',
+    tagline: 'Computer-controlled all-wheel drive, Kevlar body, adjustable ride height, and tire pressure sensors in 1986.',
+    description: 'The 959 was built as a rolling technological laboratory. It featured sequentially staged twin turbochargers, computer-controlled variable torque-splitting all-wheel drive (PSK), zero-lift aerodynamics, active hydraulic suspension, and hollow-spoke magnesium wheels with tire pressure sensors.',
+    funFact: 'Microsoft co-founders Bill Gates and Paul Allen bought 959s; Gates’ car sat in US Customs impound for 13 years until the "Show or Display" law was passed in 1999 to legalise it!',
+    innovations: ['Porsche-Steuer-Kupplung (PSK) electronic AWD system', 'Sequential twin-turbocharging eliminating turbo lag', 'Hollow-spoke magnesium alloy wheels with air-chamber sensors'],
+    soundProfile: 'flat6-screamer',
+    bodyType: 'Composite Supercar',
+    colorTheme: '#94a3b8',
+    svgSilhouette: 'porsche-959'
+  },
+  {
+    id: 'ferrari-f40',
+    photoUrl: 'photos/ferrari-f40.jpg',
+    year: 1987,
+    name: 'Ferrari F40',
+    subtitle: 'Enzo Ferrari’s 201-mph Twin-Turbo Masterpiece',
+    maker: 'Nicola Materazzi & Leonardo Fioravanti (Pininfarina)',
+    origin: 'Italy 🇮🇹',
+    eraId: 'wedge',
+    category: 'supercar',
+    topSpeed: '324 km/h (201.4 mph)',
+    topSpeedKmh: 324,
+    power: '478 hp @ 7,000 RPM',
+    engine: '2.9-liter Tipo F120A Twin-Turbocharged V8',
+    acceleration: '0-100 km/h: 3.8 seconds',
+    priceOriginal: '$400,000 in 1987',
+    priceToday: '$2,800,000 – $4,200,000',
+    unitsBuilt: '1,311 units (1987–1992)',
+    tagline: 'The first production street car to break the 200 mph (321.8 km/h) barrier.',
+    description: 'Built to celebrate Ferrari’s 40th anniversary and the final car personally approved by Enzo Ferrari before his death, the F40 was an uncompromising race car for the street. No ABS, no power steering, no door handles (just a pull cord), sliding Lexan windows, and bare green composite resin visible inside the cockpit.',
+    funFact: 'The Rosso Corsa paint was applied so thinly to save every gram of weight that the carbon-Kevlar weave is visible through the surface in direct sunlight.',
+    innovations: ['First production car to break 200 mph (321.8 km/h)', 'Tubular steel chassis bonded with carbon-Kevlar composite panels', 'Aerodynamic rear wing and NACA duct intercooler cooling ducts'],
+    soundProfile: 'turbo-spool-v8',
+    bodyType: 'Carbon-Kevlar Supercar',
+    colorTheme: '#dc2626',
+    svgSilhouette: 'ferrari-f40'
+  },
+  {
+    id: 'mazda-mx5-miata',
+    photoUrl: 'photos/mazda-mx5-miata.jpg',
+    year: 1989,
+    name: 'Mazda MX-5 Miata (NA)',
+    subtitle: 'The Rebirth of the Pure Lightweight Roadster',
+    maker: 'Bob Hall, Tom Matano, Toshihiko Hirai / Mazda',
+    origin: 'Japan 🇯🇵',
+    eraId: 'wedge',
+    category: 'everyday',
+    topSpeed: '190 km/h (118 mph)',
+    topSpeedKmh: 190,
+    power: '116 hp @ 6,500 RPM',
+    engine: '1.6-liter DOHC 16-valve B6ZE Inline-4',
+    acceleration: '0-100 km/h: 8.3 seconds',
+    priceOriginal: '$13,800 in 1989',
+    priceToday: '$10,000 – $28,000',
+    unitsBuilt: 'Over 1,200,000 units across four generations (Guinness World Record)',
+    tagline: 'Jinba Ittai (人馬一体): "The oneness of horse and rider."',
+    description: 'When British and Italian roadsters had died out due to reliability and rust issues, Mazda resurrected the concept with pop-up headlights, rear-wheel drive, 50:50 weight distribution, a bolt-action 5-speed shifter, and Japanese bulletproof mechanicals. It is officially the best-selling two-seater sports car in history.',
+    funFact: 'Mazda engineers spent months tuning the exhaust note to replicate the exact acoustic frequency of a classic 1960s Lotus Elan.',
+    innovations: ['Power Plant Frame (PPF) tying transmission and differential together for structural stiffness', '50:50 perfect front-to-rear static weight distribution', 'Lightweight aluminum hood keeping total weight under 960 kg'],
+    soundProfile: 'vintage-four',
+    bodyType: 'Lightweight Roadster',
+    colorTheme: '#b91c1c',
+    svgSilhouette: 'miata-na'
+  },
+
+  // ERA 6: THE ANALOG PEAK & JDM LEGENDS (1990 - 2004)
+  {
+    id: 'honda-nsx',
+    photoUrl: 'photos/honda-nsx.jpg',
+    year: 1990,
+    name: 'Honda / Acura NSX',
+    subtitle: 'Ayrton Senna-Honed All-Aluminum Everyday Supercar',
+    maker: 'Shigeru Uehara & Ken Okuyama / Honda',
+    origin: 'Japan 🇯🇵',
+    eraId: 'analog',
+    category: 'supercar',
+    topSpeed: '270 km/h (168 mph)',
+    topSpeedKmh: 270,
+    power: '270 hp @ 7,100 RPM (8,000 RPM redline)',
+    engine: '3.0-liter C30A VTEC V6 with Titanium Connecting Rods',
+    acceleration: '0-100 km/h: 5.2 seconds',
+    priceOriginal: '$62,000 in 1990',
+    priceToday: '$75,000 – $250,000 (NSX-R)',
+    unitsBuilt: '18,685 units (1990–2005)',
+    tagline: 'The car that humiliated Ferrari into building the vastly better F355.',
+    description: 'The New Sportscar eXperimental (NSX) proved a supercar could be exhilarating, mid-engined, and daily-drive reliable with air conditioning that worked. Featuring an F-16 fighter jet canopy greenhouse and tuned by three-time F1 World Champion Ayrton Senna around the Nürburgring.',
+    funFact: 'Senna tested the prototype at Suzuka and told engineers: "I’m not sure I can give you advice on a production car, but this feels fragile." Honda returned to the drawing board and stiffened the chassis by an extra 50%!',
+    innovations: ['World’s first all-aluminum production monocoque body', 'First production engine with lightweight titanium connecting rods', 'VTEC variable valve timing revving cleanly to 8,000 RPM'],
+    soundProfile: 'v6-vtec',
+    bodyType: 'All-Aluminum Mid-Engine Coupe',
+    colorTheme: '#dc2626',
+    svgSilhouette: 'honda-nsx'
+  },
+  {
+    id: 'mclaren-f1',
+    photoUrl: 'photos/mclaren-f1.jpg',
+    year: 1992,
+    name: 'McLaren F1',
+    subtitle: 'Gordon Murray’s 240-mph Carbon-Fiber Masterpiece',
+    maker: 'Gordon Murray & Peter Stevens / McLaren',
+    origin: 'United Kingdom 🇬🇧',
+    eraId: 'analog',
+    category: 'supercar',
+    topSpeed: '386.4 km/h (240.1 mph naturally aspirated)',
+    topSpeedKmh: 386.4,
+    power: '618 hp @ 7,400 RPM',
+    engine: '6.1-liter BMW Motorsport S70/2 60° V12',
+    acceleration: '0-100 km/h: 3.2 seconds',
+    priceOriginal: '$815,000 (£540,000) in 1992',
+    priceToday: '$20,000,000 – $25,000,000',
+    unitsBuilt: '106 units (64 road cars)',
+    tagline: 'Central driving position, gold foil heat shield, zero power steering, zero turbos.',
+    description: 'Formula 1 design genius Gordon Murray set out to build the purest driver’s car possible. Featuring a central driver’s seat flanked by two passenger seats, carbon-composite monocoque, 16 grams of pure gold leaf lining the engine bay for heat reflection, and a bespoke BMW V12. It remains the fastest naturally aspirated production car ever built.',
+    funFact: 'Despite being designed strictly as a pure road car, privateers entered it into the 1995 24 Hours of Le Mans—and against purpose-built racing prototypes, the McLaren F1 won overall on its first try!',
+    innovations: ['World’s first carbon-fiber reinforced polymer (CFRP) monocoque production car', 'Central driver seating position for supreme spatial awareness', 'Pure gold foil heat shielding in engine bay', 'Ground-effect active fan aerodynamics'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Three-Seat Carbon Hypercar',
+    colorTheme: '#f97316',
+    svgSilhouette: 'mclaren-f1'
+  },
+  {
+    id: 'toyota-supra-mk4',
+    photoUrl: 'photos/toyota-supra-mk4.jpg',
+    year: 1993,
+    name: 'Toyota Supra MK4 (A80)',
+    subtitle: 'The 2JZ-GTE Bulletproof Twin-Turbo Legend',
+    maker: 'Isao Tsuzuki / Toyota',
+    origin: 'Japan 🇯🇵',
+    eraId: 'analog',
+    category: 'supercar',
+    topSpeed: '250 km/h (electronically limited) / 290+ km/h de-restricted',
+    topSpeedKmh: 250,
+    power: '320 hp @ 5,600 RPM (Stock 2JZ-GTE)',
+    engine: '3.0-liter Sequential Twin-Turbo Inline-6 (2JZ-GTE)',
+    acceleration: '0-96 km/h: 4.6 seconds',
+    priceOriginal: '$39,900 in 1993',
+    priceToday: '$70,000 – $200,000+ (Low mileage unmolested 6-speed)',
+    unitsBuilt: 'approx. 45,000 units (1993–2002)',
+    tagline: 'The iron-block engine that tuner shops could push to 1,000+ horsepower on stock internals.',
+    description: 'With its looping basketball-hoop rear wing and cockpit dashboard oriented 100% towards the driver, the A80 Supra was Toyota’s technological halo car. Its cast-iron closed-deck 2JZ engine was so over-engineered that it became the undisputed king of the drag strip and street tuning culture.',
+    funFact: 'To save weight, Toyota hollowed out the carpet fibers, used an aluminum hood, front suspension wishbones, and roof panel, and made the rear wing structure hollow.',
+    innovations: ['Sequential twin-turbo system delivering early boost and high-end power', 'Four-channel anti-lock brakes stopping from 70 mph in record 149 feet', 'Driver-focused cockpit layout inspired by fighter aircraft'],
+    soundProfile: 'turbo-spool-v8',
+    bodyType: 'Sports Liftback Coupe',
+    colorTheme: '#ffffff',
+    svgSilhouette: 'supra-mk4'
+  },
+  {
+    id: 'toyota-prius-1997',
+    photoUrl: 'photos/toyota-prius-1997.jpg',
+    year: 1997,
+    name: 'Toyota Prius (NHW10)',
+    subtitle: 'The Hybrid Pioneer That Sparked the Green Shift',
+    maker: 'Takeshi Uchiyamada / Toyota',
+    origin: 'Japan 🇯🇵',
+    eraId: 'analog',
+    category: 'everyday',
+    topSpeed: '160 km/h (99 mph)',
+    topSpeedKmh: 160,
+    power: '58 hp (gas) + 40 hp (electric motor)',
+    engine: '1.5-liter Atkinson-cycle Inline-4 + Permanent Magnet Motor',
+    acceleration: '0-100 km/h: 12.0 seconds',
+    priceOriginal: '2.15 million Yen (~$16,900 USD in 1997)',
+    priceToday: '$5,000 – $12,000',
+    unitsBuilt: 'Over 5,000,000 Prius models sold globally',
+    tagline: '“Just in time for the 21st century.”',
+    description: 'Before the Prius, the idea of combining a petrol engine with electric batteries and regenerative braking for everyday motorists was dismissed as science fiction. Takeshi Uchiyamada’s team developed the Toyota Hybrid System (THS) with a planetary gear power-split device, kicking off the electrified automotive age.',
+    funFact: 'Hollywood celebrities famously snubbed limousines and drove to the 2003 Academy Awards in Prius hybrids to make environmental statements.',
+    innovations: ['First mass-produced gasoline-electric hybrid automobile', 'Planetary gear Continuously Variable Transmission (e-CVT)', 'Regenerative braking capturing kinetic energy into battery'],
+    soundProfile: 'electric-hum',
+    bodyType: 'Compact Hybrid Sedan',
+    colorTheme: '#0284c7',
+    svgSilhouette: 'prius'
+  },
+  {
+    id: 'nissan-skyline-r34-gtr',
+    photoUrl: 'photos/nissan-skyline-r34-gtr.jpg',
+    year: 1999,
+    name: 'Nissan Skyline GT-R (BNR34)',
+    subtitle: '"Godzilla" & The Digital Telemetry Benchmark',
+    maker: 'Kozo Watanabe / Nissan',
+    origin: 'Japan 🇯🇵',
+    eraId: 'analog',
+    category: 'supercar',
+    topSpeed: '250 km/h (155 mph limited) / 295+ km/h',
+    topSpeedKmh: 250,
+    power: '276 hp (Gentlemen’s agreement; actually ~327 hp)',
+    engine: '2.6-liter RB26DETT Twin-Turbocharged Inline-6',
+    acceleration: '0-100 km/h: 4.6 seconds',
+    priceOriginal: '5,000,000 Yen in 1999',
+    priceToday: '$150,000 – $550,000 (V-Spec II / Z-Tune: $1M+)',
+    unitsBuilt: '11,578 R34 GT-Rs',
+    tagline: 'ATTESA E-TS Pro AWD, Super-HICAS four-wheel steering, and an onboard digital telemetry screen.',
+    description: 'The R34 GT-R brought arcade precision to real asphalt. At its center was a 5.8-inch multi-function display designed in collaboration with Polyphony Digital (creators of Gran Turismo), displaying live turbo boost, G-forces, injector pulse width, and oil temperature in real time.',
+    funFact: 'Japanese automakers had a voluntary "gentlemen’s agreement" to advertise no more than 276 hp on domestic cars—even though the stock R34 produced well over 320 horsepower from the factory.',
+    innovations: ['Multi-Function Display (MFD) digital live telemetry in 1999', 'ATTESA E-TS Pro active torque-split all-wheel drive', 'Super-HICAS electronically controlled four-wheel steering'],
+    soundProfile: 'turbo-inline5',
+    bodyType: 'AWD Performance Coupe',
+    colorTheme: '#2563eb',
+    svgSilhouette: 'skyline-r34'
+  },
+  {
+    id: 'porsche-carrera-gt',
+    photoUrl: 'photos/porsche-carrera-gt.jpg',
+    year: 2004,
+    name: 'Porsche Carrera GT',
+    subtitle: 'The 5.7-Liter Screaming V10 Analog Icon',
+    maker: 'Roland Kussmaul & Walter Röhrl / Porsche',
+    origin: 'Germany 🇩🇪',
+    eraId: 'analog',
+    category: 'supercar',
+    topSpeed: '334 km/h (208 mph)',
+    topSpeedKmh: 334,
+    power: '603 hp @ 8,000 RPM (8,400 RPM redline)',
+    engine: '5.7-liter Naturally Aspirated 68° V10',
+    acceleration: '0-100 km/h: 3.5 seconds',
+    priceOriginal: '$448,000 in 2004',
+    priceToday: '$1,300,000 – $2,200,000',
+    unitsBuilt: '1,270 units',
+    tagline: 'Beechwood gearshift knob, pure carbon monocoque, zero stability control.',
+    description: 'Originally intended for a cancelled Le Mans racing prototype, Porsche transplanted their howling 5.7L V10 into a carbon-fiber monocoque chassis with pushrod suspension and a ceramic composite clutch. Without electronic stability control, it demands supreme respect from anyone behind the wheel.',
+    funFact: 'The wooden gear lever knob was made of laminated birchen wood as an homage to the Le Mans-winning Porsche 917 race car to save precious ounces of weight.',
+    innovations: ['Porsche Ceramic Composite Clutch (PCCC) with ultra-small inertia', 'Carbon-fiber monocoque and engine subframe', 'High-mounted beechwood gearshift with manual six-speed transmission'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Targa Supercar',
+    colorTheme: '#cbd5e1',
+    svgSilhouette: 'carrera-gt'
+  },
+
+  // ERA 7: THE HYPERCAR & EV RENAISSANCE (2005 - 2024)
+  {
+    id: 'bugatti-veyron',
+    photoUrl: 'photos/bugatti-veyron.jpg',
+    year: 2005,
+    name: 'Bugatti Veyron 16.4',
+    subtitle: 'The 1,001-HP Engineering Mountain Over 400 km/h',
+    maker: 'Ferdinand Piëch / Bugatti (VW Group)',
+    origin: 'France 🇫🇷 / Germany 🇩🇪',
+    eraId: 'hypercar',
+    category: 'supercar',
+    topSpeed: '407 km/h (253 mph)',
+    topSpeedKmh: 407,
+    power: '1,001 hp (736 kW) @ 6,000 RPM',
+    engine: '8.0-liter Quad-Turbocharged 64-valve W16',
+    acceleration: '0-100 km/h: 2.5 seconds',
+    priceOriginal: '€1,100,000 ($1.7M USD) in 2005',
+    priceToday: '$1,500,000 – $2,800,000',
+    unitsBuilt: '450 units (300 coupes, 150 roadsters)',
+    tagline: 'Ferdinand Piëch’s impossible mandate: 1,000 horsepower, 400 km/h, and drive to the opera in luxury.',
+    description: 'The Veyron rewrote the physics of what road cars could achieve. To keep the 8.0-liter W16 cool at 400 km/h, it required 10 separate radiators. At top speed, the air brake wing deploys in 0.4 seconds, providing the braking deceleration force equivalent to an ordinary family hatchback.',
+    funFact: 'At maximum top speed (407 km/h), the 100-liter fuel tank is completely drained in just 12 minutes, but Michelin warned the bespoke tires would melt in 15 minutes anyway!',
+    innovations: ['Quad-turbocharged W16 engine generating 1,001 hp', 'Active rear hydraulic air brake creating 0.68g of deceleration', 'Dual-clutch 7-speed transmission handling 1,250 Nm of torque', 'Ten radiators keeping powertrain and hydraulics cool'],
+    soundProfile: 'turbo-spool-v8',
+    bodyType: 'W16 Quad-Turbo Hypercar',
+    colorTheme: '#1e3a8a',
+    svgSilhouette: 'veyron'
+  },
+  {
+    id: 'tesla-roadster-2008',
+    photoUrl: 'photos/tesla-roadster-2008.jpg',
+    year: 2008,
+    name: 'Tesla Roadster (Gen 1)',
+    subtitle: 'The Car That Disproved the "Golf Cart" EV Stigma',
+    maker: 'Martin Eberhard, Marc Tarpenning, Elon Musk / Tesla',
+    origin: 'United States 🇺🇸',
+    eraId: 'hypercar',
+    category: 'electric',
+    topSpeed: '201 km/h (125 mph)',
+    topSpeedKmh: 201,
+    power: '248 hp (185 kW)',
+    engine: '3-phase 4-pole AC induction motor + 53 kWh Li-ion pack',
+    acceleration: '0-96 km/h: 3.9 seconds',
+    priceOriginal: '$98,950 in 2008',
+    priceToday: '$90,000 – $180,000 (Early collector status)',
+    unitsBuilt: 'approx. 2,450 units',
+    tagline: '6,831 laptop lithium-ion battery cells packed into a Lotus Elise chassis.',
+    description: 'Before 2008, electric vehicles were viewed as slow, ugly, and range-limited neighborhood carts. Tesla shoved thousands of 18650 cylindrical laptop battery cells into a bonded aluminum Lotus tub. With instant torque from 0 RPM and a 244-mile range, it launched the global electric vehicle gold rush.',
+    funFact: 'In February 2018, Elon Musk launched his personal midnight cherry Tesla Roadster into deep space aboard the SpaceX Falcon Heavy rocket, complete with a mannequin "Starman" in the driver’s seat.',
+    innovations: ['First highway-legal serial production car with lithium-ion battery cells', 'First production EV with over 200 miles (320 km) of range per charge', 'Liquid thermal management system for cylindrical battery modules'],
+    soundProfile: 'electric-hum',
+    bodyType: 'Electric Targa Roadster',
+    colorTheme: '#991b1b',
+    svgSilhouette: 'roadster-gen1'
+  },
+  {
+    id: 'tesla-model-s',
+    photoUrl: 'photos/tesla-model-s.jpg',
+    year: 2012,
+    name: 'Tesla Model S',
+    subtitle: 'The Skateboard Chassis & Ludicrous Acceleration',
+    maker: 'Franz von Holzhausen & Elon Musk / Tesla',
+    origin: 'United States 🇺🇸',
+    eraId: 'hypercar',
+    category: 'electric',
+    topSpeed: '322 km/h (200 mph with Plaid Track Pack)',
+    topSpeedKmh: 322,
+    power: 'Up to 1,020 hp (Model S Plaid Tri-Motor)',
+    engine: 'Dual / Tri-Motor Carbon-Sleeved Rotors + 100 kWh Pack',
+    acceleration: '0-100 km/h: 2.1 seconds (Plaid)',
+    priceOriginal: '$57,400 base in 2012',
+    priceToday: '$75,000 – $110,000 (Plaid new)',
+    unitsBuilt: 'Over 350,000 units',
+    tagline: 'Over-The-Air software updates, giant 17-inch touchscreen, and sub-2-second 0-60.',
+    description: 'The Model S proved that an all-electric luxury sedan could outperform German sports sedans, earn 5-star crash safety ratings across every category, and continuously improve over time via Over-The-Air (OTA) software updates. Its low "skateboard" battery architecture became the industry standard.',
+    funFact: 'During NHTSA roof crush testing, the testing machine broke before the Model S roof collapsed, requiring five times the vehicle’s weight to cause failure.',
+    innovations: ['Flat skateboard battery pack integrated as structural floorpan', 'Over-The-Air (OTA) firmware updates improving performance post-sale', 'Massive portrait center touchscreen eliminating conventional switches', 'Carbon-fiber wrapped rotor electric motors capable of 20,000+ RPM'],
+    soundProfile: 'electric-hum',
+    bodyType: 'Electric Executive Liftback',
+    colorTheme: '#dc2626',
+    svgSilhouette: 'model-s'
+  },
+  {
+    id: 'the-holy-trinity',
+    photoUrl: 'photos/the-holy-trinity.jpg',
+    year: 2013,
+    name: 'The Holy Trinity (P1 / LaFerrari / 918)',
+    subtitle: 'The Hybrid Hypercar Pinnacle (McLaren P1 / Ferrari LaFerrari / Porsche 918)',
+    maker: 'McLaren, Ferrari, and Porsche',
+    origin: 'UK 🇬🇧 / Italy 🇮🇹 / Germany 🇩🇪',
+    eraId: 'hypercar',
+    category: 'supercar',
+    topSpeed: '350 km/h (217 mph+)',
+    topSpeedKmh: 350,
+    power: '887 hp (918) / 903 hp (P1) / 950 hp (LaFerrari)',
+    engine: 'Twin-Turbo V8 / NA V12 / NA V8 + KERS Hybrid Systems',
+    acceleration: '0-100 km/h: 2.5 – 2.8 seconds',
+    priceOriginal: '$845,000 (918) to $1,400,000 (LaFerrari)',
+    priceToday: '$1,800,000 – $4,500,000 each',
+    unitsBuilt: '375 (P1) / 499 (LaFerrari) / 918 (918 Spyder)',
+    tagline: 'When the world’s three greatest sports car houses unveiled hybrid hypercars in the exact same year.',
+    description: '2013 was the year hybrid technology crossed into gods of speed. The Porsche 918 Spyder used AWD electric torque vectoring to become the first production car to lap the Nürburgring under 7 minutes (6:57). Ferrari utilized F1-derived HY-KERS with an 800 hp V12, while McLaren employed a twin-turbo V8 with instant torque-fill.',
+    funFact: 'Top Gear and The Grand Tour famously spent three years negotiating with all three manufacturers to stage a three-way head-to-head showdown on neutral tires at the Algarve Circuit.',
+    innovations: ['Formula 1 KERS hybrid electric torque-fill systems', 'All-wheel drive hybrid torque vectoring (Porsche 918)', 'First sub-7 minute Nürburgring Nordschleife production lap'],
+    soundProfile: 'v12-howl',
+    bodyType: 'Hybrid Hypercar Trio',
+    colorTheme: '#7c3aed',
+    svgSilhouette: 'holy-trinity'
+  },
+  {
+    id: 'bugatti-chiron-300',
+    photoUrl: 'photos/bugatti-chiron-300.jpg',
+    year: 2019,
+    name: 'Bugatti Chiron Super Sport 300+',
+    subtitle: 'The First Production-Based Car to Smash 300 MPH',
+    maker: 'Bugatti / Stephan Winkelmann',
+    origin: 'France 🇫🇷',
+    eraId: 'hypercar',
+    category: 'supercar',
+    topSpeed: '490.48 km/h (304.77 mph)',
+    topSpeedKmh: 490.48,
+    power: '1,578 hp (1,600 PS) @ 7,000 RPM',
+    engine: '8.0-liter Quad-Turbo W16 "Thor"',
+    acceleration: '0-200 km/h: 5.8 seconds; 0-400 km/h: 28.6 seconds',
+    priceOriginal: '€3,500,000 ($3.9M USD)',
+    priceToday: '$5,000,000+',
+    unitsBuilt: '30 production units',
+    tagline: 'Covering 136 meters every single second down the Ehra-Lessien straight.',
+    description: 'On August 2, 2019, test driver Andy Wallace kept his foot pinned to the firewall on VW’s 8.7-kilometer Ehra-Lessien straight. The lengthened "longtail" Chiron sliced through the air to record an unbelievable 304.77 mph—becoming the first road-based vehicle to crack 300 mph.',
+    funFact: 'At 304 mph, the centrifugal forces on the Michelin Pilot Sport Cup 2 tires generated 5,300 Gs—meaning a single 2.5-gram tire pressure sensor weighed the equivalent of 13 kilograms!',
+    innovations: ['Longtail low-drag aerodynamic body extensions', 'Tires reinforced with carbon-fiber bands spun on military testing rigs', 'Laser-controlled active height leveling to prevent blowovers at 300 mph'],
+    soundProfile: 'turbo-spool-v8',
+    bodyType: 'Longtail Hypercar',
+    colorTheme: '#0f172a',
+    svgSilhouette: 'chiron'
+  },
+  {
+    id: 'rimac-nevera',
+    photoUrl: 'photos/rimac-nevera.jpg',
+    year: 2021,
+    name: 'Rimac Nevera',
+    subtitle: 'The Croatian 1,914-HP All-Electric Acceleration King',
+    maker: 'Mate Rimac / Rimac Automobili',
+    origin: 'Croatia 🇭🇷',
+    eraId: 'hypercar',
+    category: 'electric',
+    topSpeed: '412 km/h (256 mph) in reverse as well!',
+    topSpeedKmh: 412,
+    power: '1,914 hp (1,408 kW) & 2,360 Nm torque',
+    engine: 'Four individual bespoke permanent-magnet electric motors',
+    acceleration: '0-100 km/h: 1.81 seconds; Quarter Mile: 8.25 seconds',
+    priceOriginal: '€2,000,000 ($2.4M USD)',
+    priceToday: '$2,500,000 – $3,000,000',
+    unitsBuilt: '150 units',
+    tagline: 'Brokered 23 world performance records in a single day at Automotive Testing Papenburg.',
+    description: 'Starting in his garage converting an old BMW E30 to electric power, Croatian inventor Mate Rimac built the world’s most advanced electric powertrain company. The Nevera features four independent motors capable of adjusting torque 100 times per second per wheel, obliterating nearly every acceleration record on earth.',
+    funFact: 'Because electric motors run equally fast in either direction, Rimac set a Guinness World Record by driving the Nevera backwards in reverse at 275.74 km/h (171.34 mph)!',
+    innovations: ['All-Wheel Torque Vectoring 2 (R-AWTV 2) calculating torque 100 times/second', 'Single-piece carbon-fiber monocoque with bonded battery pack (stiffest car ever tested)', 'AI Driver Coach using 12 ultrasonic sensors and cameras to guide racing lines'],
+    soundProfile: 'electric-hyper',
+    bodyType: 'Quad-Motor Electric Hypercar',
+    colorTheme: '#06b6d4',
+    svgSilhouette: 'rimac-nevera'
+  },
+  {
+    id: 'tesla-cybertruck',
+    photoUrl: 'photos/tesla-cybertruck.jpg',
+    year: 2024,
+    name: 'Tesla Cybertruck',
+    subtitle: 'Cold-Rolled Stainless Exoskeleton & Steer-By-Wire',
+    maker: 'Tesla Design Studio',
+    origin: 'United States 🇺🇸',
+    eraId: 'hypercar',
+    category: 'electric',
+    topSpeed: '209 km/h (130 mph Cyberbeast)',
+    topSpeedKmh: 209,
+    power: '845 hp (Tri-Motor Cyberbeast)',
+    engine: 'Tri-Motor AWD + 123 kWh 800V Structural Battery',
+    acceleration: '0-96 km/h: 2.6 seconds (while towing a Porsche 911!)',
+    priceOriginal: '$79,990 – $99,990 (Foundation Series)',
+    priceToday: '$90,000 – $120,000',
+    unitsBuilt: 'In active mass production',
+    tagline: 'Origami stamped 30X cold-rolled stainless steel, 48V low-voltage architecture, and zero steering shaft.',
+    description: 'Rejecting a century of traditional pickup body design, the Cybertruck uses an unpainted ultra-hard stainless steel exoskeleton skin that resists dents and 9mm bullets. It represents major architectural shifts: 48-volt low-voltage bus and full digital steer-by-wire with variable gear ratios.',
+    funFact: 'There is no mechanical steering column between the yoke steering wheel and the wheels; motors turn the front and rear wheels based entirely on digital wire signals.',
+    innovations: ['Full Steer-By-Wire with four-wheel rear steering', '48-Volt low voltage vehicle architecture (replacing 12V)', '800-volt high voltage powertrain architecture enabling 350+ kW charging', 'Ultra-hard 30X cold-rolled stainless steel stressed skin'],
+    soundProfile: 'electric-hum',
+    bodyType: 'Exoskeleton Electric Truck',
+    colorTheme: '#64748b',
+    svgSilhouette: 'cybertruck'
+  },
+
+  // ERA 8: THE FRONTIER: BEYOND 2025
+  {
+    id: 'solid-state-hyper-gt',
+    photoUrl: 'photos/solid-state-hyper-gt.jpg',
+    year: 2030,
+    name: 'Aero-Morph Solid-State Hyper-GT',
+    subtitle: 'The 1,000-km Range & Morphing Aerodynamics Vision',
+    maker: 'Future Mobility Vision (2030+)',
+    origin: 'Global 🌐',
+    eraId: 'future',
+    category: 'future',
+    topSpeed: '450 km/h (280 mph)',
+    topSpeedKmh: 450,
+    power: '2,500 hp (Solid-state battery + Carbon Nanotube motors)',
+    engine: 'Quad Carbon-Nanotube In-Wheel Flux Motors',
+    acceleration: '0-100 km/h: 1.4 seconds (Active vacuum suction)',
+    priceOriginal: 'Concept / Emerging Frontier',
+    priceToday: 'Future Production Benchmark',
+    unitsBuilt: 'Concept Architecture',
+    tagline: '10-minute full charge, 1,200 km range, and synthetic electro-fuel clean emissions.',
+    description: 'The upcoming decade of motoring will blend solid-state non-flammable battery cells (yielding double the energy density of lithium-ion) with flexible smart-skin bodywork that physically morphs its contours at speed to eliminate aerodynamic drag or create vacuum ground effects.',
+    funFact: 'Solid-state batteries replace liquid flammable electrolytes with ceramics or polymers, operating safely from -40°C to +100°C without risk of thermal runaway.',
+    innovations: ['Solid-state ceramic electrolyte battery chemistry', 'Active surface morphing aerodynamic skins', 'Zero-cobalt sustainable closed-loop recyclable architectures', 'Autonomous Level 4/5 lounge seating transformations'],
+    soundProfile: 'electric-hyper',
+    bodyType: 'Morphing Aero Hyper-GT',
+    colorTheme: '#10b981',
+    svgSilhouette: 'future-aero'
+  }
+];
+
+const AUDIO_PROFILES = {
+  'steam-chug': { type: 'steam', pitch: 60, rate: 2.5, rumble: 0.8 },
+  'putt-putt': { type: 'single-cylinder', pitch: 85, rate: 4.0, rumble: 0.6 },
+  'vintage-four': { type: 'inline4', pitch: 120, rate: 8.0, rumble: 0.7 },
+  'art-deco-straight8': { type: 'straight8', pitch: 110, rate: 12.0, rumble: 0.9 },
+  'supercharged-straight8': { type: 'supercharged', pitch: 140, rate: 14.0, rumble: 0.85 },
+  'flat4-beetle': { type: 'boxer4', pitch: 130, rate: 7.5, rumble: 0.75 },
+  'v8-muscle': { type: 'crossplane-v8', pitch: 95, rate: 16.0, rumble: 1.0 },
+  'flat6-screamer': { type: 'flat6', pitch: 180, rate: 18.0, rumble: 0.7 },
+  'v12-howl': { type: 'v12', pitch: 240, rate: 24.0, rumble: 0.65 },
+  'turbo-inline5': { type: 'inline5-turbo', pitch: 160, rate: 15.0, rumble: 0.85 },
+  'turbo-spool-v8': { type: 'turbo-v8', pitch: 140, rate: 20.0, rumble: 0.9 },
+  'v6-vtec': { type: 'v6', pitch: 190, rate: 18.0, rumble: 0.6 },
+  'electric-hum': { type: 'ev-motor', pitch: 350, rate: 1.0, rumble: 0.2 },
+  'electric-hyper': { type: 'ev-hyper', pitch: 480, rate: 1.0, rumble: 0.3 },
+  'click-buckle': { type: 'mechanical', pitch: 800, rate: 1.0, rumble: 0.1 }
+};
+
+
+/* ==========================================================================
+   4. CORE SCROLLYTELLING & INTERACTIVE APPLICATION
+   ========================================================================== */
+/**
+ * The History of Cars - Core Application Logic
+ * Integrates Scrollytelling, Cruise Control, Procedural Audio,
+ * Search, Dream Garage, and IntersectionObserver fallbacks.
+ */
+
+
+
+
+
+class CarHistoryApp {
+  constructor() {
+    this.currentEraIndex = 0;
+    this.currentFilter = 'all';
+    this.cruiseSpeed = 0; // 0 = stopped, 1 = 1x, 2 = 2x
+    this.cruiseAnimId = null;
+    this.garageIds = new Set(JSON.parse(localStorage.getItem('car_history_garage') || '[]'));
+    this.activeInspectedCar = null;
+
+    // DOM Elements
+    this.highwayContainer = document.getElementById('highway-content');
+    this.odometerYearEl = document.getElementById('odometer-year');
+    this.speedometerValEl = document.getElementById('speedometer-val');
+    this.eraBadgeTextEl = document.getElementById('era-badge-text');
+    this.eraBadgeEl = document.getElementById('era-badge');
+    this.progressBarEl = document.getElementById('timeline-progress');
+    this.minimapLabelsEl = document.getElementById('minimap-labels');
+    this.minimapThumbEl = document.getElementById('minimap-thumb');
+
+    // Controls
+    this.soundToggleBtn = document.getElementById('sound-toggle-btn');
+    this.cruiseControlBtn = document.getElementById('cruise-control-btn');
+    this.searchBtn = document.getElementById('search-btn');
+    this.viewModeBtn = document.getElementById('view-mode-btn');
+    this.garageBtn = document.getElementById('garage-btn');
+    this.garageCountEl = document.getElementById('garage-count');
+    this.isPhotoMode = true;
+
+    // Modals
+    this.inspectorModal = document.getElementById('inspector-modal');
+    this.inspectorContent = document.getElementById('inspector-content');
+    this.searchModal = document.getElementById('search-modal');
+    this.searchInput = document.getElementById('search-input');
+    this.searchResults = document.getElementById('search-results');
+    this.garageModal = document.getElementById('garage-modal');
+    this.garageContent = document.getElementById('garage-content');
+
+    this.init();
+  }
+
+  init() {
+    this.renderMinimap();
+    this.renderHighway();
+    this.setupEventListeners();
+    this.setupRevTouchListeners();
+    this.setupScrollObserver();
+    this.updateGarageBadge();
+    this.setupFallbacks();
+  }
+
+  renderMinimap() {
+    this.minimapLabelsEl.innerHTML = ERAS.map((era, index) => `
+      <li class="minimap-item ${index === 0 ? 'active' : ''}" data-era-id="${era.id}" data-index="${index}">
+        ${era.name.split(':')[0]} (${era.startYear})
+      </li>
+    `).join('');
+
+    this.minimapLabelsEl.querySelectorAll('.minimap-item').forEach(item => {
+      item.addEventListener('click', () => {
+        audioEngine.playClick();
+        const eraId = item.dataset.eraId;
+        const target = document.getElementById(`era-${eraId}`);
+        if (target) {
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  renderHighway() {
+    let html = '';
+    let currentEra = null;
+    let stationCounter = 0;
+
+    CARS.forEach((car, index) => {
+      // Check if era changed to insert era banner
+      if (!currentEra || currentEra.id !== car.eraId) {
+        currentEra = ERAS.find(e => e.id === car.eraId);
+        if (currentEra) {
+          html += `
+            <div class="era-banner" id="era-${currentEra.id}" style="--era-accent: ${currentEra.accentColor}">
+              <div class="era-banner-years">${currentEra.years}</div>
+              <h2 class="era-banner-title">${currentEra.name}</h2>
+              <p class="era-banner-desc">${currentEra.description}</p>
+            </div>
+          `;
+        }
+      }
+
+      const isRight = (stationCounter % 2 === 1);
+      const isSaved = this.garageIds.has(car.id);
+      stationCounter++;
+
+      html += `
+        <div class="car-station ${isRight ? 'right' : 'left'}" data-year="${car.year}" data-era="${car.eraId}" data-category="${car.category}" id="car-${car.id}">
+          <div class="station-marker">
+            <span class="station-marker-dot"></span>
+            <span>${car.year}</span>
+          </div>
+
+          <article class="car-card" data-car-id="${car.id}">
+            <div class="car-card-header">
+              <div>
+                <span class="car-year-badge">${car.year}</span>
+                <span class="car-category-pill" style="margin-left: 0.5rem">${car.origin}</span>
+              </div>
+              <span class="car-category-pill">${car.category}</span>
+            </div>
+
+            <h3 class="car-title">${car.name}</h3>
+            <div class="car-subtitle">${car.subtitle}</div>
+
+            <div class="car-art-frame rev-trigger" data-car-id="${car.id}" data-sound="${car.soundProfile}" title="Touch & hold image to rev the ${car.name}">
+              <span class="photo-overlay-tag">🔊 Touch to Rev</span>
+              <img src="${car.photoUrl}" alt="${car.name}" class="car-photo" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';">
+              <div class="car-vector-fallback" style="display: none; width: 100%; height: 100%;">
+                ${renderCarSvg(car, { isInteractive: true })}
+              </div>
+            </div>
+
+            <div class="car-specs-grid">
+              <div class="spec-item">
+                <div class="spec-name">Top Speed</div>
+                <div class="spec-val">${car.topSpeed}</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-name">Horsepower</div>
+                <div class="spec-val">${car.power}</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-name">Engine / Powertrain</div>
+                <div class="spec-val">${car.engine}</div>
+              </div>
+              <div class="spec-item">
+                <div class="spec-name">0–100 km/h</div>
+                <div class="spec-val">${car.acceleration}</div>
+              </div>
+            </div>
+
+            <p class="car-tagline">“${car.tagline}”</p>
+
+            <div class="card-actions">
+              <button class="btn-details" data-car-id="${car.id}">
+                Read History & Specs →
+              </button>
+              <button class="btn-garage-toggle ${isSaved ? 'saved' : ''}" data-car-id="${car.id}" title="Save to Dream Garage">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="${isSaved ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
+                  <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" />
+                </svg>
+              </button>
+            </div>
+          </article>
+        </div>
+      `;
+    });
+
+    this.highwayContainer.innerHTML = html;
+  }
+
+  setupEventListeners() {
+    // Sound FX Toggle
+    this.soundToggleBtn.addEventListener('click', () => {
+      const isMuted = audioEngine.toggleMute();
+      this.soundToggleBtn.classList.toggle('active', !isMuted);
+      this.soundToggleBtn.querySelector('span').textContent = isMuted ? 'Sound: OFF' : 'Sound: ON';
+      if (!isMuted) audioEngine.playClick();
+    });
+
+    // Cruise Control (Auto-Drive)
+    this.cruiseControlBtn.addEventListener('click', () => {
+      audioEngine.playClick();
+      this.toggleCruiseControl();
+    });
+
+    // Search Toggle
+    this.searchBtn.addEventListener('click', () => {
+      audioEngine.playClick();
+      this.openSearchModal();
+    });
+
+    // View Mode Toggle (Photos vs Blueprints)
+    if (this.viewModeBtn) {
+      this.viewModeBtn.addEventListener('click', () => {
+        audioEngine.playClick();
+        this.isPhotoMode = !this.isPhotoMode;
+        this.viewModeBtn.classList.toggle('active', !this.isPhotoMode);
+        this.viewModeBtn.querySelector('span').textContent = this.isPhotoMode ? 'Mode: Photos' : 'Mode: Blueprints';
+        document.body.classList.toggle('blueprint-mode', !this.isPhotoMode);
+      });
+    }
+
+    // Dream Garage Toggle
+    this.garageBtn.addEventListener('click', () => {
+      audioEngine.playClick();
+      this.openGarageModal();
+    });
+
+    // Filter Buttons
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        audioEngine.playClick();
+        document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        this.applyFilter(tab.dataset.filter);
+      });
+    });
+
+    // Highway Delegation (Inspect & Garage)
+    this.highwayContainer.addEventListener('click', (e) => {
+      const detailsBtn = e.target.closest('.btn-details') || e.target.closest('.car-title');
+      if (detailsBtn) {
+        const carId = detailsBtn.dataset.carId || detailsBtn.closest('.car-card')?.dataset.carId;
+        const car = CARS.find(c => c.id === carId);
+        if (car) {
+          audioEngine.playClick();
+          this.openInspectorModal(car);
+        }
+        return;
+      }
+
+      const garageToggleBtn = e.target.closest('.btn-garage-toggle');
+      if (garageToggleBtn) {
+        const carId = garageToggleBtn.dataset.carId;
+        this.toggleGarageSave(carId, garageToggleBtn);
+      }
+    });
+
+    // Modal Close buttons & overlay click
+    document.querySelectorAll('.modal-overlay').forEach(modal => {
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.closest('.modal-close-btn')) {
+          audioEngine.playClick();
+          modal.classList.remove('active');
+          audioEngine.stopThrottleRev();
+        }
+      });
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        this.openSearchModal();
+      } else if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+        audioEngine.stopThrottleRev();
+      } else if (e.key === ' ' && !['INPUT', 'TEXTAREA'].includes(e.target.tagName)) {
+        e.preventDefault();
+        this.toggleCruiseControl();
+      }
+    });
+
+    // Search input typing
+    this.searchInput.addEventListener('input', (e) => {
+      this.handleSearch(e.target.value);
+    });
+  }
+
+  setupScrollObserver() {
+    let ticking = false;
+
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          this.handleScrollUpdate();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+  }
+
+  handleScrollUpdate() {
+    const scrollY = window.scrollY;
+    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+    const progress = Math.min(Math.max(scrollY / (docHeight || 1), 0), 1);
+
+    // Update Top Progress Bar
+    this.progressBarEl.style.width = `${(progress * 100).toFixed(1)}%`;
+
+    // Update Minimap Thumb
+    if (this.minimapThumbEl) {
+      this.minimapThumbEl.style.top = `${(progress * 100).toFixed(1)}%`;
+    }
+
+    // Find the car station currently in the center of viewport
+    const stations = Array.from(document.querySelectorAll('.car-station'));
+    const viewportMiddle = scrollY + window.innerHeight * 0.45;
+
+    let closestStation = null;
+    let minDistance = Infinity;
+
+    for (const station of stations) {
+      if (station.style.display === 'none') continue;
+      const rect = station.getBoundingClientRect();
+      const stationTop = rect.top + scrollY;
+      const distance = Math.abs(stationTop - viewportMiddle);
+
+      if (distance < minDistance) {
+        minDistance = distance;
+        closestStation = station;
+      }
+    }
+
+    if (closestStation) {
+      const year = closestStation.dataset.year;
+      const eraId = closestStation.dataset.era;
+      const era = ERAS.find(e => e.id === eraId);
+
+      // Roll Odometer
+      this.odometerYearEl.textContent = year;
+
+      if (era) {
+        // Update Era Badge
+        this.eraBadgeTextEl.textContent = era.name;
+        document.documentElement.style.setProperty('--era-accent', era.accentColor);
+        document.documentElement.style.setProperty('--road-stripe', era.roadLine);
+        document.body.style.backgroundColor = era.bgGradient;
+
+        // Find highest speed record car up to this year
+        const carsUpToYear = CARS.filter(c => c.year <= parseInt(year));
+        const maxSpeed = Math.max(...carsUpToYear.map(c => c.topSpeedKmh || 0));
+        this.speedometerValEl.textContent = `${Math.round(maxSpeed)} km/h`;
+
+        // Update Minimap active label
+        const eraIndex = ERAS.findIndex(e => e.id === eraId);
+        document.querySelectorAll('.minimap-item').forEach((item, idx) => {
+          item.classList.toggle('active', idx === eraIndex);
+        });
+      }
+    }
+  }
+
+  toggleCruiseControl() {
+    if (this.cruiseSpeed === 0) {
+      this.cruiseSpeed = 1;
+      this.cruiseControlBtn.classList.add('active');
+      this.cruiseControlBtn.querySelector('span').textContent = 'Cruising (1x)';
+      this.startCruiseLoop();
+    } else if (this.cruiseSpeed === 1) {
+      this.cruiseSpeed = 2.5;
+      this.cruiseControlBtn.classList.add('active');
+      this.cruiseControlBtn.querySelector('span').textContent = 'Autobahn (2.5x)';
+    } else {
+      this.cruiseSpeed = 0;
+      this.cruiseControlBtn.classList.remove('active');
+      this.cruiseControlBtn.querySelector('span').textContent = 'Cruise Control';
+      if (this.cruiseAnimId) cancelAnimationFrame(this.cruiseAnimId);
+    }
+  }
+
+  startCruiseLoop() {
+    const loop = () => {
+      if (this.cruiseSpeed > 0) {
+        window.scrollBy({ top: 3.5 * this.cruiseSpeed, behavior: 'instant' });
+        this.cruiseAnimId = requestAnimationFrame(loop);
+      }
+    };
+    this.cruiseAnimId = requestAnimationFrame(loop);
+  }
+
+  applyFilter(filter) {
+    this.currentFilter = filter;
+    const stations = document.querySelectorAll('.car-station');
+
+    stations.forEach(station => {
+      const category = station.dataset.category;
+      let shouldShow = false;
+
+      if (filter === 'all') shouldShow = true;
+      else if (filter === 'supercar' && category === 'supercar') shouldShow = true;
+      else if (filter === 'everyday' && category === 'everyday') shouldShow = true;
+      else if (filter === 'milestone' && category === 'milestone') shouldShow = true;
+      else if (filter === 'electric' && (category === 'electric' || category === 'future')) shouldShow = true;
+
+      station.style.display = shouldShow ? 'flex' : 'none';
+    });
+  }
+
+  openInspectorModal(car) {
+    this.activeInspectedCar = car;
+    const isSaved = this.garageIds.has(car.id);
+
+    this.inspectorContent.innerHTML = `
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem">
+        <div>
+          <span class="car-year-badge">${car.year}</span>
+          <span class="car-category-pill" style="margin-left: 0.5rem">${car.origin}</span>
+          <span class="car-category-pill">${car.category}</span>
+          <h2 style="font-size: 2.2rem; font-weight: 900; margin-top: 0.5rem; color: #ffffff">${car.name}</h2>
+          <div style="font-size: 1.1rem; color: var(--era-accent)">${car.subtitle}</div>
+        </div>
+      </div>
+
+      <div class="car-art-frame rev-trigger" data-car-id="${car.id}" data-sound="${car.soundProfile}" style="height: 320px; margin-bottom: 2rem" title="Touch & hold image to rev the engine">
+        <span class="photo-overlay-tag">🔊 Touch image to Rev</span>
+        <img src="${car.photoUrl}" alt="${car.name}" class="car-photo" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';">
+        <div class="car-vector-fallback" style="display: none; width: 100%; height: 100%;">
+          ${renderCarSvg(car, { isInteractive: false })}
+        </div>
+      </div>
+
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.75rem; color: #ffffff">Historical Impact & Story</h3>
+      <p style="font-size: 1.05rem; line-height: 1.6; color: #cbd5e1; margin-bottom: 1.5rem">${car.description}</p>
+
+      <div style="background: rgba(255, 255, 255, 0.04); padding: 1rem 1.25rem; border-radius: 12px; margin-bottom: 1.5rem">
+        <strong style="color: var(--era-accent)">Did You Know?</strong>
+        <p style="font-size: 0.95rem; color: #e2e8f0; margin-top: 0.25rem">${car.funFact}</p>
+      </div>
+
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin-bottom: 0.5rem; color: #ffffff">Key Engineering Innovations</h3>
+      <ul class="innovations-list">
+        ${car.innovations.map(inv => `<li>${inv}</li>`).join('')}
+      </ul>
+
+      <h3 style="font-size: 1.15rem; font-weight: 700; margin: 1.5rem 0 0.75rem; color: #ffffff">Complete Technical Data</h3>
+      <div class="car-specs-grid" style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))">
+        <div class="spec-item"><div class="spec-name">Manufacturer</div><div class="spec-val">${car.maker}</div></div>
+        <div class="spec-item"><div class="spec-name">Engine</div><div class="spec-val">${car.engine}</div></div>
+        <div class="spec-item"><div class="spec-name">Horsepower</div><div class="spec-val">${car.power}</div></div>
+        <div class="spec-item"><div class="spec-name">Top Speed</div><div class="spec-val">${car.topSpeed}</div></div>
+        <div class="spec-item"><div class="spec-name">Acceleration</div><div class="spec-val">${car.acceleration}</div></div>
+        <div class="spec-item"><div class="spec-name">Units Built</div><div class="spec-val">${car.unitsBuilt}</div></div>
+        <div class="spec-item"><div class="spec-name">Original Price</div><div class="spec-val">${car.priceOriginal}</div></div>
+        <div class="spec-item"><div class="spec-name">Today's Value</div><div class="spec-val">${car.priceToday}</div></div>
+      </div>
+    `;
+
+    this.inspectorModal.classList.add('active');
+  }
+
+  toggleGarageSave(carId, buttonEl) {
+    audioEngine.playSeatbeltClick();
+    if (this.garageIds.has(carId)) {
+      this.garageIds.delete(carId);
+      if (buttonEl) {
+        buttonEl.classList.remove('saved');
+        buttonEl.querySelector('svg').setAttribute('fill', 'none');
+      }
+    } else {
+      this.garageIds.add(carId);
+      if (buttonEl) {
+        buttonEl.classList.add('saved');
+        buttonEl.querySelector('svg').setAttribute('fill', 'currentColor');
+      }
+    }
+    localStorage.setItem('car_history_garage', JSON.stringify([...this.garageIds]));
+    this.updateGarageBadge();
+  }
+
+  updateGarageBadge() {
+    this.garageCountEl.textContent = this.garageIds.size;
+  }
+
+  openSearchModal() {
+    this.searchInput.value = '';
+    this.handleSearch('');
+    this.searchModal.classList.add('active');
+    setTimeout(() => this.searchInput.focus(), 100);
+  }
+
+  handleSearch(query) {
+    const q = query.trim().toLowerCase();
+    const matches = CARS.filter(car => {
+      if (!q) return true;
+      return (
+        car.name.toLowerCase().includes(q) ||
+        car.maker.toLowerCase().includes(q) ||
+        car.year.toString().includes(q) ||
+        car.tagline.toLowerCase().includes(q) ||
+        car.engine.toLowerCase().includes(q) ||
+        car.innovations.some(i => i.toLowerCase().includes(q))
+      );
+    });
+
+    this.searchResults.innerHTML = matches.map(car => `
+      <div class="search-result-item" data-car-id="${car.id}">
+        <div>
+          <strong style="color: #ffffff">${car.name}</strong>
+          <span style="color: var(--era-accent); margin-left: 0.5rem; font-family: var(--font-mono)">${car.year}</span>
+          <div style="font-size: 0.8rem; color: var(--text-muted)">${car.subtitle}</div>
+        </div>
+        <div style="font-family: var(--font-mono); font-size: 0.85rem; color: #38bdf8">${car.topSpeed}</div>
+      </div>
+    `).join('');
+
+    this.searchResults.querySelectorAll('.search-result-item').forEach(item => {
+      item.addEventListener('click', () => {
+        const carId = item.dataset.carId;
+        const target = document.getElementById(`car-${carId}`);
+        this.searchModal.classList.remove('active');
+        if (target) {
+          audioEngine.playClick();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  }
+
+  openGarageModal() {
+    const savedCars = CARS.filter(c => this.garageIds.has(c.id));
+
+    if (savedCars.length === 0) {
+      this.garageContent.innerHTML = `
+        <div style="text-align: center; padding: 3rem 1rem">
+          <div style="font-size: 3rem; margin-bottom: 1rem">🏎️</div>
+          <h3 style="font-size: 1.5rem; margin-bottom: 0.5rem; color: #ffffff">Your Dream Garage is Empty</h3>
+          <p style="color: var(--text-muted); max-width: 400px; margin: 0 auto">
+            Click the bookmark icon on any vehicle along the highway to save it to your garage and compare specs across automotive history!
+          </p>
+        </div>
+      `;
+    } else {
+      this.garageContent.innerHTML = `
+        <div style="margin-bottom: 1.5rem">
+          <h3 style="font-size: 1.8rem; font-weight: 800; color: #ffffff">My Dream Garage (${savedCars.length})</h3>
+          <p style="color: var(--text-muted)">Compare specifications and performance across decades of history.</p>
+        </div>
+
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.25rem">
+          ${savedCars.map(car => `
+            <div style="background: rgba(255, 255, 255, 0.04); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 1.25rem">
+              <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 0.5rem">
+                <span class="car-year-badge">${car.year}</span>
+                <span style="font-family: var(--font-mono); font-size: 0.85rem; color: #38bdf8">${car.topSpeed}</span>
+              </div>
+              <h4 style="font-size: 1.2rem; font-weight: 700; color: #ffffff">${car.name}</h4>
+              <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1rem">${car.power} • ${car.engine}</div>
+              <div class="car-art-frame rev-trigger" data-car-id="${car.id}" data-sound="${car.soundProfile}" style="height: 140px; margin-bottom: 1rem" title="Touch & hold image to rev the engine">
+                <span class="photo-overlay-tag">🔊 Touch to Rev</span>
+                <img src="${car.photoUrl}" alt="${car.name}" class="car-photo" loading="lazy" onerror="this.style.display='none'; if(this.nextElementSibling) this.nextElementSibling.style.display='block';">
+                <div class="car-vector-fallback" style="display: none; width: 100%; height: 100%;">
+                  ${renderCarSvg(car, { isInteractive: false })}
+                </div>
+              </div>
+              <div style="display: flex; gap: 0.5rem">
+                <button class="btn-details" data-car-id="${car.id}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem">Details</button>
+                <button class="btn-garage-toggle saved" data-car-id="${car.id}" style="padding: 0.4rem 0.8rem; font-size: 0.8rem">Remove</button>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      // Wire details / remove buttons
+      this.garageContent.querySelectorAll('.btn-details').forEach(b => {
+        b.addEventListener('click', () => {
+          const car = CARS.find(c => c.id === b.dataset.carId);
+          if (car) {
+            this.garageModal.classList.remove('active');
+            this.openInspectorModal(car);
+          }
+        });
+      });
+
+      this.garageContent.querySelectorAll('.btn-garage-toggle').forEach(b => {
+        b.addEventListener('click', () => {
+          this.toggleGarageSave(b.dataset.carId);
+          this.openGarageModal(); // Refresh view
+        });
+      });
+    }
+
+    this.garageModal.classList.add('active');
+  }
+
+  setupRevTouchListeners() {
+    this.activeRevTrigger = null;
+
+    const startRev = (frameEl) => {
+      if (this.activeRevTrigger) return;
+      this.activeRevTrigger = frameEl;
+      const soundProfile = frameEl.dataset.sound || 'v8-muscle';
+
+      // Auto enable sound if currently muted so user gets immediate response
+      if (audioEngine.isMuted) {
+        audioEngine.isMuted = false;
+        if (this.soundToggleBtn) {
+          this.soundToggleBtn.classList.add('active');
+          this.soundToggleBtn.querySelector('span').textContent = 'Sound: ON';
+        }
+      }
+
+      frameEl.classList.add('is-revving');
+      const tag = frameEl.querySelector('.photo-overlay-tag');
+      if (tag) tag.textContent = '🔊 Revving Engine...';
+
+      audioEngine.startThrottleRev(soundProfile);
+    };
+
+    const stopRev = () => {
+      if (!this.activeRevTrigger) return;
+      const frameEl = this.activeRevTrigger;
+      this.activeRevTrigger = null;
+
+      frameEl.classList.remove('is-revving');
+      const tag = frameEl.querySelector('.photo-overlay-tag');
+      if (tag) tag.textContent = '🔊 Touch to Rev';
+
+      audioEngine.stopThrottleRev();
+    };
+
+    // Pointer events on document level to capture touch and mouse flawlessly
+    document.addEventListener('pointerdown', (e) => {
+      const trigger = e.target.closest('.rev-trigger');
+      if (trigger) {
+        if (e.pointerType === 'touch') {
+          e.preventDefault();
+        }
+        startRev(trigger);
+      }
+    }, { passive: false });
+
+    document.addEventListener('pointerup', stopRev);
+    document.addEventListener('pointercancel', stopRev);
+    window.addEventListener('blur', stopRev);
+  }
+
+  setupFallbacks() {
+    // IntersectionObserver fallback for browsers lacking CSS Scroll-Driven Animations
+    if (!CSS.supports('(animation-timeline: view()) and (animation-range: entry)')) {
+      const observer = new IntersectionObserver((entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            const ratio = entry.intersectionRatio;
+            entry.target.style.opacity = Math.min(1, 0.4 + ratio * 0.6);
+            entry.target.style.transform = `translateY(${Math.max(0, (1 - ratio) * 40)}px) scale(${0.94 + ratio * 0.06})`;
+          }
+        }
+      }, {
+        threshold: Array.from({ length: 21 }, (_, i) => i / 20)
+      });
+
+      document.querySelectorAll('.car-card').forEach(el => observer.observe(el));
+    }
+  }
+}
+
+// Instantiate on DOM load
+window.addEventListener('DOMContentLoaded', () => {
+  new CarHistoryApp();
+});
+
+
+</script>
+</body>
+</html>
